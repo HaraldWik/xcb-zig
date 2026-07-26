@@ -4,8 +4,6 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const registry = b.option(std.Build.LazyPath, "registry", "Path to the x-protocol registry") orelse b.dependency("xproto", .{}).path("src/");
-
     const exe = b.addExecutable(.{
         .name = "xcb_zig_generator",
         .root_module = b.createModule(.{
@@ -18,7 +16,7 @@ pub fn build(b: *std.Build) void {
 
     const run = b.addRunArtifact(exe);
 
-    run.addFileArg(registry.path(b, "xproto.xml"));
+    run.addFileArg(b.path("protocol/core.zon"));
 
     run.addArg("-o");
     const output = run.addOutputFileArg("xcb.zig");

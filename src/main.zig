@@ -26,7 +26,7 @@ pub fn main(init: std.process.Init) !void {
     while (args.next()) |arg| {
         if (std.mem.eql(u8, arg, "-o")) {
             output_opt = args.next();
-        } else if (std.mem.endsWith(u8, arg, ".xml")) {
+        } else if (std.mem.endsWith(u8, arg, ".zon")) {
             if (args_count == null)
                 try files.append(gpa, arg)
             else
@@ -42,11 +42,10 @@ pub fn main(init: std.process.Init) !void {
         defer file.close(io);
 
         var file_reader = file.reader(io, &.{});
-        const source = try file_reader.interface.allocRemaining(arena, .unlimited);
+        const source = try file_reader.interface.allocRemainingAlignedSentinel(arena, .unlimited, .of(u8), 0);
 
-        protocol.* = try .parse(gpa, source);
+        protocol.* = try .parse(arena, source);
     }
-    defer for (protocols) |*protocol| protocol.deinit(gpa);
 
     var output_allocating: std.Io.Writer.Allocating = .init(gpa);
     defer output_allocating.deinit();
@@ -56,84 +55,235 @@ pub fn main(init: std.process.Init) !void {
 
     for (protocols) |protocol| try protocol.emit(output);
 
-    const output_file = try std.Io.Dir.createFileAbsolute(io, output_opt orelse return error.NoOutput, .{});
+    try output.writeByte(0);
+
+    const output_path = output_opt orelse return error.NoOutput;
+    const output_file = try std.Io.Dir.createFileAbsolute(io, output_path, .{});
     defer output_file.close(io);
 
-    try output_file.writeStreamingAll(io, output.buffered());
+    var tree = try std.zig.Ast.parse(gpa, output.buffer[0 .. output.end - 1 :0], .zig);
+    defer tree.deinit(gpa);
+
+    if (tree.errors.len != 0) {
+        try output_file.writeStreamingAll(io, output.buffered());
+        return;
+        // try std.zig.printAstErrorsToStderr(gpa, io, tree, "generated", .auto);
+        // return error.ParseError;
+    }
+
+    var out_buf: [4096]u8 = undefined;
+    var out_writer = output_file.writer(io, &out_buf);
+
+    try tree.render(gpa, &out_writer.interface, .{});
+
+    try out_writer.flush();
 }
 
 pub const Protocol = struct {
-    xids: std.ArrayList(Xid) = .empty,
+    xids: []const Xid,
+    xidunions: []const XidUnion,
+    typedefs: []const Typedef,
+
+    enums: []const Enum,
+    bitmasks: []const Bitmask,
+
+    structs: []const Struct,
+    unions: []const Union,
+
+    requests: []const Request,
+    replies: []const Struct,
+
+    events: []const Struct,
+    errors: []const Struct,
 
     pub const Xid = struct {
         name: []const u8,
     };
 
+    pub const XidUnion = struct {
+        name: []const u8,
+        types: []const []const u8,
+    };
+
+    pub const Typedef = struct {
+        old: []const u8,
+        new: []const u8,
+    };
+
+    pub const Enum = struct {
+        name: []const u8,
+        fields: []const EnumField,
+    };
+
+    pub const Bitmask = struct {
+        name: []const u8,
+        fields: []const EnumField,
+    };
+
+    pub const EnumField = struct {
+        name: []const u8,
+        value: u64,
+    };
+
     pub const Struct = struct {
-        fields: []const u8,
+        name: []const u8,
+        fields: []const Field,
     };
 
-    pub const Decleration = union(enum) {
-        xidtype: Xid,
-
-        pub const Tag = std.meta.Tag(Decleration);
+    pub const Union = struct {
+        name: []const u8,
+        fields: []const Field,
     };
 
-    pub fn parse(gpa: std.mem.Allocator, document: []const u8) !Protocol {
-        var parser: xml.Parser = .init(document);
+    pub const Field = struct {
+        name: ?[]const u8 = null,
+        type: ?[]const u8 = null,
 
-        var xids: std.ArrayList(Xid) = .empty;
+        // Underlying storage type if enum can represent multiple types.
+        // Example:
+        // .{
+        //     .name = "backing_stores",
+        //     .type = "BackingStore",
+        //     .type_info = "u8",
+        // }
+        type_info: ?[]const u8 = null,
 
-        var decleration: ?Decleration = null;
-        while (parser.next()) |content| switch (content) {
-            .open_tag => |tag_name| {
-                const tag = std.meta.stringToEnum(Decleration.Tag, tag_name) orelse continue;
-                switch (tag) {
-                    inline else => |comptime_tag| {
-                        decleration = @unionInit(Decleration, @tagName(comptime_tag), undefined);
-                    },
-                }
-            },
-            .close_tag => {
-                if (decleration) |decl| switch (decl) {
-                    .xidtype => |xid| try xids.append(gpa, xid),
-                };
-                decleration = null;
-            },
-            .attribute => |attribute| if (decleration) |decl| switch (std.meta.activeTag(decl)) {
-                inline else => |tag| {
-                    const T = @FieldType(Decleration, @tagName(tag));
+        @"enum": ?[]const u8 = null,
 
-                    inline for (std.meta.fields(T)) |field| {
-                        if (std.mem.eql(u8, attribute.name, field.name)) {
-                            @field(@field(decleration.?, @tagName(tag)), field.name) = attribute.raw_value;
-                        }
-                    }
-                },
-                // .xidtype => {
-                // std.debug.assert(attribute.name)
-                // decl.?.xidtype.name
-                // },
-            },
-            .comment => {},
-            .processing_instruction => {},
-            .character_data => {},
-        };
+        list: bool = false,
+        fieldref: ?[]const u8 = null,
 
-        return .{
-            .xids = xids,
+        pad: ?u32 = null,
+        alignment: ?u32 = null,
+    };
+
+    pub const Request = struct {
+        name: []const u8,
+        params: []const Field,
+        returns: ?[]const u8 = null,
+    };
+
+    pub fn parse(arena: std.mem.Allocator, source: [:0]const u8) error{ OutOfMemory, ParseZon }!Protocol {
+        var diag: std.zon.parse.Diagnostics = .{};
+        defer diag.deinit(arena);
+
+        return std.zon.parse.fromSliceAlloc(
+            Protocol,
+            arena,
+            source,
+            &diag,
+            .{},
+        ) catch {
+            var it = diag.iterateErrors();
+
+            while (it.next()) |err| {
+                std.log.err("{f}", .{
+                    err.fmtMessage(&diag),
+                });
+            }
+
+            return error.ParseZon;
         };
     }
 
-    pub fn deinit(self: *Protocol, gpa: std.mem.Allocator) void {
-        self.xids.deinit(gpa);
-        self.* = undefined;
-    }
-
-    pub fn emit(self: Protocol, writer: *std.Io.Writer) std.Io.Writer.Error!void {
-        for (self.xids.items) |xid| {
-            try writer.print("pub const {f} = Xid;\n", .{titleCase(xid.name)});
+    pub fn emit(self: Protocol, w: *std.Io.Writer) std.Io.Writer.Error!void {
+        try w.writeByte('\n');
+        for (self.xids) |xid| {
+            try w.print("pub const {f} = Xid;\n", .{typeCase(xid.name)});
         }
+
+        try w.writeByte('\n');
+        for (self.xidunions) |xidunion| {
+            try w.print("pub const {f} = extern union {{\n", .{typeCase(xidunion.name)});
+            for (xidunion.types) |t| {
+                try w.print("{f}: {f},\n", .{ snakeCase(t), typeCase(t) });
+            }
+            try w.writeAll("};\n");
+        }
+
+        try w.writeByte('\n');
+        for (self.typedefs) |typedef| {
+            try w.print("pub const {f} = {f};\n", .{ typeCase(typedef.new), typeCase(typedef.old) });
+        }
+
+        try w.writeByte('\n');
+        for (self.enums) |e| {
+            try w.print("pub const {f} = struct {{\n", .{snakeCase(e.name)});
+            for (e.fields) |field| {
+                try w.print("pub const {f} = {d};\n", .{ snakeCase(field.name), field.value });
+            }
+            try w.writeAll("};\n");
+        }
+
+        try w.writeByte('\n');
+        for (self.bitmasks) |bitmask| {
+            try w.print("pub const {f} = struct {{\n", .{snakeCase(bitmask.name)});
+            for (bitmask.fields) |field| {
+                try w.print("pub const {f} = {d};\n", .{ snakeCase(field.name), field.value });
+            }
+            try w.writeAll("};\n");
+        }
+
+        try w.writeByte('\n');
+        for (self.structs) |s| try emitStruct(s, w);
+
+        try w.writeByte('\n');
+        for (self.unions) |u| {
+            try w.print("pub const {f} = extern union {{\n", .{typeCase(u.name)});
+            for (u.fields) |field| {
+                try w.print("{f}: {f},\n", .{ snakeCase(field.name.?), typeCase(field.type.?) });
+            }
+            try w.writeAll("};\n");
+        }
+
+        try w.writeByte('\n');
+        for (self.replies) |reply| try emitStruct(reply, w);
+        try w.writeByte('\n');
+        for (self.events) |event| try emitStruct(event, w);
+        try w.writeByte('\n');
+        for (self.errors) |err| try emitStruct(err, w);
+
+        for (self.requests) |request| {
+            try w.writeByte('\n');
+            try w.print("pub extern \"xcb\" fn xcb_{f}(\n", .{snakeCase(request.name)});
+
+            try w.writeAll("connection: Connection,\n");
+            for (request.params) |param| {
+                if (param.pad != null or param.alignment != null) continue;
+
+                try w.print("{f}: {s}{f},\n", .{ snakeCase(param.name.?), if (param.list) "[*]const " else "", typeCase(param.type.?) });
+            }
+
+            if (request.returns) |returns| {
+                try w.print(") Cookie({f});\n", .{typeCase(returns)});
+
+                try w.print("pub extern \"xcb\" fn xcb_{f}_reply(connection: Connection, cookie: Cookie({f}), err: *?*GenericError,) *{f};\n", .{ snakeCase(request.name), typeCase(returns), typeCase(returns) });
+            } else {
+                try w.writeAll(") void;\n");
+            }
+
+            try w.print("pub const {f} = xcb_{f};", .{ camelCase(request.name), snakeCase(request.name) });
+            if (request.returns != null) try w.print("pub const {f}Reply = xcb_{f}_reply;", .{ camelCase(request.name), snakeCase(request.name) });
+        }
+    }
+
+    fn emitStruct(s: Struct, w: *std.Io.Writer) std.Io.Writer.Error!void {
+        var pad_index: usize = 0;
+        try w.print("pub const {f} = extern struct {{\n", .{typeCase(s.name)});
+        for (s.fields) |field| {
+            const pad = field.pad orelse field.alignment;
+            if (pad) |bytes| {
+                try w.print("pad{d}: [{d}]u8,\n", .{ pad_index, bytes });
+                pad_index += 1;
+                continue;
+            }
+
+            const name = field.name orelse continue;
+            const t = field.type orelse continue;
+
+            try w.print("{f}: {s}{f},\n", .{ snakeCase(name), if (field.list) "[*]const " else "", typeCase(t) });
+        }
+        try w.writeAll("};\n");
     }
 };
 
@@ -141,26 +291,84 @@ const Case = enum {
     title,
     camel,
     snake,
+    type,
 };
 
 fn formatCaseImpl(comptime case: Case, comptime trim: bool) type {
     return struct {
         pub fn f(bytes: []const u8, writer: *std.Io.Writer) std.Io.Writer.Error!void {
+            if (bytes.len == 0) return writer.writeAll("unknown");
             const str = if (trim) trimPrefix(bytes) else bytes;
 
-            if ((case == .camel or case == .snake) and std.zig.Token.getKeyword(str) != null) {
+            if (case == .snake and std.zig.Token.getKeyword(str) != null or std.ascii.isDigit(str[0])) {
                 try writer.print("@\"{s}\"", .{str});
                 return;
             }
 
             switch (case) {
                 .snake => {
-                    for (str) |c| {
-                        try writer.writeByte(std.ascii.toLower(c));
+                    var prev: ?u8 = null;
+
+                    for (str, 0..) |c, i| {
+                        if (std.ascii.isUpper(c)) {
+                            const needs_separator =
+                                i != 0 and
+                                prev != '_' and
+                                (prev != null and !std.ascii.isUpper(prev.?));
+
+                            if (needs_separator) {
+                                try writer.writeByte('_');
+                            }
+
+                            try writer.writeByte(std.ascii.toLower(c));
+                        } else {
+                            try writer.writeByte(c);
+                        }
+
+                        prev = c;
                     }
                 },
                 .camel, .title => {
                     var upper = case == .title;
+
+                    for (str) |c| {
+                        if (c == '_') {
+                            upper = true;
+                            continue;
+                        }
+
+                        try writer.writeByte(if (upper)
+                            std.ascii.toUpper(c)
+                        else
+                            std.ascii.toLower(c));
+
+                        upper = false;
+                    }
+                },
+                .type => {
+                    const is_builtin = builtin: {
+                        if (std.mem.eql(u8, str, "void")) break :builtin true;
+
+                        if (str.len < 2)
+                            break :builtin false;
+
+                        if (str[0] != 'u' and str[0] != 'i')
+                            break :builtin false;
+
+                        for (str[1..]) |c| {
+                            if (!std.ascii.isDigit(c))
+                                break :builtin false;
+                        }
+
+                        break :builtin true;
+                    };
+
+                    if (is_builtin) {
+                        try writer.writeAll(str);
+                        return;
+                    }
+
+                    var upper = true;
 
                     for (str) |c| {
                         if (c == '_') {
@@ -206,5 +414,13 @@ fn snakeCase(bytes: []const u8) std.fmt.Alt([]const u8, formatCaseImpl(.snake, f
 }
 
 fn snakeCaseTrim(bytes: []const u8) std.fmt.Alt([]const u8, formatCaseImpl(.snake, true).f) {
+    return .{ .data = bytes };
+}
+
+fn typeCase(bytes: []const u8) std.fmt.Alt([]const u8, formatCaseImpl(.type, false).f) {
+    return .{ .data = bytes };
+}
+
+fn typeCaseTrim(bytes: []const u8) std.fmt.Alt([]const u8, formatCaseImpl(.type, true).f) {
     return .{ .data = bytes };
 }
