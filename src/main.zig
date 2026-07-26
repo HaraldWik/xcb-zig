@@ -93,7 +93,7 @@ pub const Protocol = struct {
     requests: []const Request,
     replies: []const Struct,
 
-    events: []const Struct,
+    events: []const Event,
     errors: []const Struct,
 
     pub const Xid = struct {
@@ -161,6 +161,12 @@ pub const Protocol = struct {
         name: []const u8,
         params: []const Field,
         returns: ?[]const u8 = null,
+    };
+
+    pub const Event = struct {
+        name: []const u8,
+        number: u8,
+        fields: []const Field,
     };
 
     pub fn parse(arena: std.mem.Allocator, source: [:0]const u8) error{ OutOfMemory, ParseZon }!Protocol {
@@ -239,7 +245,25 @@ pub const Protocol = struct {
         try w.writeByte('\n');
         for (self.replies) |reply| try emitStruct(reply, w);
         try w.writeByte('\n');
-        for (self.events) |event| try emitStruct(event, w);
+        for (self.events) |event| {
+            var pad_index: usize = 0;
+            try w.print("pub const {f} = extern struct {{\n", .{typeCase(event.name)});
+            for (event.fields) |field| {
+                const pad = field.pad orelse field.alignment;
+                if (pad) |bytes| {
+                    try w.print("pad{d}: [{d}]u8,\n", .{ pad_index, bytes });
+                    pad_index += 1;
+                    continue;
+                }
+
+                const name = field.name orelse continue;
+                const t = field.type orelse continue;
+
+                try w.print("{f}: {s}{f},\n", .{ snakeCase(name), if (field.list) "[*]const " else "", typeCase(t) });
+            }
+            try w.print("pub const opcode = {d};", .{event.number});
+            try w.writeAll("};\n");
+        }
         try w.writeByte('\n');
         for (self.errors) |err| try emitStruct(err, w);
 
@@ -247,7 +271,7 @@ pub const Protocol = struct {
             try w.writeByte('\n');
             try w.print("pub extern \"xcb\" fn xcb_{f}(\n", .{snakeCase(request.name)});
 
-            try w.writeAll("connection: Connection,\n");
+            try w.writeAll("connection: *Connection,\n");
             for (request.params) |param| {
                 if (param.pad != null or param.alignment != null) continue;
 
@@ -257,7 +281,7 @@ pub const Protocol = struct {
             if (request.returns) |returns| {
                 try w.print(") Cookie({f});\n", .{typeCase(returns)});
 
-                try w.print("pub extern \"xcb\" fn xcb_{f}_reply(connection: Connection, cookie: Cookie({f}), err: *?*GenericError,) *{f};\n", .{ snakeCase(request.name), typeCase(returns), typeCase(returns) });
+                try w.print("pub extern \"xcb\" fn xcb_{f}_reply(connection: *Connection, cookie: Cookie({f}), err: ?*?*GenericError,) *{f};\n", .{ snakeCase(request.name), typeCase(returns), typeCase(returns) });
             } else {
                 try w.writeAll(") void;\n");
             }
@@ -347,7 +371,7 @@ fn formatCaseImpl(comptime case: Case, comptime trim: bool) type {
                 },
                 .type => {
                     const is_builtin = builtin: {
-                        if (std.mem.eql(u8, str, "void")) break :builtin true;
+                        if (std.mem.eql(u8, str, "void") or std.mem.eql(u8, str, "bool")) break :builtin true;
 
                         if (str.len < 2)
                             break :builtin false;

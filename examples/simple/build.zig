@@ -15,8 +15,11 @@ pub fn build(b: *std.Build) void {
             .imports = &.{
                 .{ .name = "xcb", .module = xcb },
             },
+            .link_libc = true,
         }),
     });
+
+    exe.root_module.linkSystemLibrary("xcb", .{});
 
     b.installArtifact(exe);
 

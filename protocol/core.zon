@@ -874,14 +874,14 @@
                 .{ .pad = 2 },
                 .{
                     .name = "authorization_protocol_name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "authorization_protocol_name_len",
                 },
                 .{ .alignment = 4 },
                 .{
                     .name = "authorization_protocol_data",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "authorization_protocol_data_len",
                 },
@@ -898,7 +898,7 @@
                 .{ .name = "length", .type = "u16" },
                 .{
                     .name = "reason",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "reason_len",
                 },
@@ -910,7 +910,7 @@
                 .{ .name = "status", .type = "u8" },
                 .{ .pad = 5 },
                 .{ .name = "length", .type = "u16" },
-                .{ .name = "reason", .type = "char", .list = true },
+                .{ .name = "reason", .type = "u8", .list = true },
             },
         },
         .{
@@ -938,7 +938,7 @@
                 .{ .pad = 4 },
                 .{
                     .name = "vendor",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "vendor_len",
                 },
@@ -989,7 +989,7 @@
                 .{ .name = "name_len", .type = "u8" },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -1065,6 +1065,12 @@
                 .{ .name = "class", .type = "u16", .@"enum" = "window_class" },
                 .{ .name = "visual", .type = "visualid" },
                 .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
             },
         },
         .{
@@ -1073,6 +1079,12 @@
                 .{ .pad = 1 },
                 .{ .name = "window", .type = "window" },
                 .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
             },
         },
         .{
@@ -1149,6 +1161,12 @@
                 .{ .name = "window", .type = "window" },
                 .{ .name = "value_mask", .type = "u16" },
                 .{ .pad = 2 },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
             },
         },
         .{
@@ -1182,7 +1200,7 @@
                 .{ .pad = 2 },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -1272,7 +1290,7 @@
                 .{ .name = "propagate", .type = "bool" },
                 .{ .name = "destination", .type = "window" },
                 .{ .name = "event_mask", .type = "u32" },
-                .{ .name = "event", .type = "char", .list = true },
+                .{ .name = "event", .type = "u8", .list = true },
             },
         },
         .{
@@ -1455,7 +1473,7 @@
                 .{ .pad = 2 },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -1492,7 +1510,7 @@
                 .{ .name = "pattern_len", .type = "u16" },
                 .{
                     .name = "pattern",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "pattern_len",
                 },
@@ -1507,7 +1525,7 @@
                 .{ .name = "pattern_len", .type = "u16" },
                 .{
                     .name = "pattern",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "pattern_len",
                 },
@@ -1557,6 +1575,12 @@
                 .{ .name = "colormap", .type = "gcontext" },
                 .{ .name = "drawable", .type = "drawable" },
                 .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
             },
         },
         .{
@@ -1565,6 +1589,12 @@
                 .{ .pad = 1 },
                 .{ .name = "graphics_context", .type = "gcontext" },
                 .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
             },
         },
         .{
@@ -1786,7 +1816,7 @@
                 .{ .name = "y", .type = "i16" },
                 .{
                     .name = "string",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "string_len",
                 },
@@ -1875,7 +1905,7 @@
                 .{ .pad = 2 },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -1931,7 +1961,7 @@
                 .{ .pad = 2 },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -1955,7 +1985,7 @@
                 .{ .pad = 2 },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -2034,7 +2064,7 @@
                 .{ .pad = 2 },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -2070,6 +2100,12 @@
             .params = .{
                 .{ .pad = 1 },
                 .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
             },
         },
         .{
@@ -2277,7 +2313,7 @@
                 .{ .pad = 22 },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -2474,7 +2510,7 @@
                 },
                 .{
                     .name = "name",
-                    .type = "char",
+                    .type = "u8",
                     .list = true,
                     .fieldref = "name_len",
                 },
@@ -2745,6 +2781,7 @@
     .events = .{
         .{
             .name = "key_press",
+            .number = 2,
             .fields = .{
                 .{ .name = "detail", .type = "keycode" },
                 .{ .name = "time", .type = "timestamp" },
@@ -2762,6 +2799,7 @@
         },
         .{
             .name = "button_press",
+            .number = 4,
             .fields = .{
                 .{ .name = "detail", .type = "button" },
                 .{ .name = "time", .type = "timestamp" },
@@ -2779,6 +2817,7 @@
         },
         .{
             .name = "motion_notify",
+            .number = 6,
             .fields = .{
                 .{ .name = "detail", .type = "u8", .@"enum" = "motion" },
                 .{ .name = "time", .type = "timestamp" },
@@ -2796,6 +2835,7 @@
         },
         .{
             .name = "enter_notify",
+            .number = 7,
             .fields = .{
                 .{ .name = "detail", .type = "u8", .@"enum" = "notify_detail" },
                 .{ .name = "time", .type = "timestamp" },
@@ -2813,6 +2853,7 @@
         },
         .{
             .name = "focus_in",
+            .number = 9,
             .fields = .{
                 .{ .name = "detail", .type = "u8", .@"enum" = "notify_detail" },
                 .{ .name = "event", .type = "window" },
@@ -2822,12 +2863,14 @@
         },
         .{
             .name = "keymap_notify",
+            .number = 11,
             .fields = .{
                 .{ .name = "keys", .type = "u8", .list = true },
             },
         },
         .{
             .name = "expose",
+            .number = 12,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "window", .type = "window" },
@@ -2841,6 +2884,7 @@
         },
         .{
             .name = "graphics_exposure",
+            .number = 13,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "drawable", .type = "drawable" },
@@ -2856,6 +2900,7 @@
         },
         .{
             .name = "no_exposure",
+            .number = 14,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "drawable", .type = "drawable" },
@@ -2866,6 +2911,7 @@
         },
         .{
             .name = "visibility_notify",
+            .number = 15,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "window", .type = "window" },
@@ -2875,6 +2921,7 @@
         },
         .{
             .name = "create_notify",
+            .number = 16,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "parent", .type = "window" },
@@ -2890,6 +2937,7 @@
         },
         .{
             .name = "destroy_notify",
+            .number = 17,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "event", .type = "window" },
@@ -2898,6 +2946,7 @@
         },
         .{
             .name = "unmap_notify",
+            .number = 18,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "event", .type = "window" },
@@ -2908,6 +2957,7 @@
         },
         .{
             .name = "map_notify",
+            .number = 19,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "event", .type = "window" },
@@ -2918,6 +2968,7 @@
         },
         .{
             .name = "map_request",
+            .number = 20,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "parent", .type = "window" },
@@ -2926,6 +2977,7 @@
         },
         .{
             .name = "reparent_notify",
+            .number = 21,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "event", .type = "window" },
@@ -2939,6 +2991,7 @@
         },
         .{
             .name = "configure_notify",
+            .number = 22,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "event", .type = "window" },
@@ -2955,6 +3008,7 @@
         },
         .{
             .name = "configure_request",
+            .number = 23,
             .fields = .{
                 .{ .name = "stack_mode", .type = "u8", .@"enum" = "stack_mode" },
                 .{ .name = "parent", .type = "window" },
@@ -2970,6 +3024,7 @@
         },
         .{
             .name = "gravity_notify",
+            .number = 24,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "event", .type = "window" },
@@ -2980,6 +3035,7 @@
         },
         .{
             .name = "resize_request",
+            .number = 25,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "window", .type = "window" },
@@ -2989,6 +3045,7 @@
         },
         .{
             .name = "circulate_notify",
+            .number = 26,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "event", .type = "window" },
@@ -3000,6 +3057,7 @@
         },
         .{
             .name = "property_notify",
+            .number = 28,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "window", .type = "window" },
@@ -3011,6 +3069,7 @@
         },
         .{
             .name = "selection_clear",
+            .number = 29,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "time", .type = "timestamp" },
@@ -3020,6 +3079,7 @@
         },
         .{
             .name = "selection_request",
+            .number = 30,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "time", .type = "timestamp" },
@@ -3032,6 +3092,7 @@
         },
         .{
             .name = "selection_notify",
+            .number = 31,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "time", .type = "timestamp" },
@@ -3043,6 +3104,7 @@
         },
         .{
             .name = "colormap_notify",
+            .number = 32,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "window", .type = "window" },
@@ -3054,6 +3116,7 @@
         },
         .{
             .name = "client_message",
+            .number = 33,
             .fields = .{
                 .{ .name = "format", .type = "u8" },
                 .{ .name = "window", .type = "window" },
@@ -3063,6 +3126,7 @@
         },
         .{
             .name = "mapping_notify",
+            .number = 34,
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "request", .type = "u8", .@"enum" = "mapping" },
@@ -3073,6 +3137,7 @@
         },
         .{
             .name = "ge_generic",
+            .number = 35,
             .fields = .{
                 .{ .pad = 22 },
             },

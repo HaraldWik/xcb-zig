@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 
 
 TYPE_MAP = {
+    "char": "u8",
     "CARD8": "u8",
     "CARD16": "u16",
     "CARD32": "u32",
@@ -298,6 +299,16 @@ def parse_fields(node):
                 item["fieldref"] = ref.text.strip()
 
             fields.append(item)
+        
+        elif child.tag == "switch":
+            ref = child.find("fieldref")
+
+            fields.append({
+                "name": child.attrib["name"],
+                "type": "u32",
+                "list": True,
+                "fieldref": ref.text.strip() if ref is not None else None,
+            })
 
     return fields
 
@@ -438,12 +449,12 @@ def convert(path):
 
 
         elif node.tag == "event":
-
+            
             result["events"].append({
                 "name": node.attrib["name"],
+                "number": int(node.attrib["number"]),
                 "fields": parse_fields(node),
             })
-
 
         elif node.tag == "error":
 
