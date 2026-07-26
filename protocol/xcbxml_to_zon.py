@@ -456,6 +456,25 @@ def convert(path):
                 "fields": parse_fields(node),
             })
 
+
+        elif node.tag == "eventcopy":
+
+            ref = next(
+                (
+                    event
+                    for event in result["events"]
+                    if event["name"] == node.attrib["ref"]
+                ),
+                None
+            )
+
+            if ref is not None:
+                result["events"].append({
+                    "name": node.attrib["name"],
+                    "number": int(node.attrib["number"]),
+                    "fields": ref["fields"],
+                })
+
         elif node.tag == "error":
 
             result["errors"].append({

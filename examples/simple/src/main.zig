@@ -25,7 +25,7 @@ pub fn main() !void {
         xcb.cw.back_pixel | xcb.cw.event_mask,
         &.{
             0x00ff00ff,
-            xcb.event_mask.exposure,
+            xcb.event_mask.exposure | xcb.event_mask.key_press | xcb.event_mask.key_release,
         },
     );
 
@@ -39,8 +39,8 @@ pub fn main() !void {
 
     _ = xcb.flush(connection);
 
-    const net_wm_name = xcb.internAtomReply(connection, net_wm_name_cookie, null).atom;
-    const utf8_string = xcb.internAtomReply(connection, utf8_string_cookie, null).atom;
+    const net_wm_name = xcb.internAtomReply(connection, net_wm_name_cookie, null).atom; // this is broken
+    const utf8_string = xcb.internAtomReply(connection, utf8_string_cookie, null).atom; // this is broken
 
     std.log.info("net_wm_name: {d} -> {d}", .{ net_wm_name_cookie.sequence, net_wm_name.id });
     std.log.info("utf8_string: {d} -> {d}", .{ utf8_string_cookie.sequence, utf8_string.id });
@@ -81,6 +81,12 @@ pub fn main() !void {
             xcb.ClientMessage.opcode => {
                 // window close handling
                 break;
+            },
+            xcb.KeyPress.opcode => {
+                std.log.info("keypress!", .{});
+            },
+            xcb.KeyRelease.opcode => {
+                std.log.info("key release!", .{});
             },
             else => {},
         }
