@@ -200,5 +200,8 @@ extern "xcb" fn xcb_wait_for_event(connection: *Connection) ?*GenericEvent;
 pub const waitForEvent = xcb_wait_for_event;
 extern "xcb" fn xcb_poll_for_event(connection: *Connection) ?*GenericEvent;
 pub const pollForEvent = xcb_poll_for_event;
+extern "xcb" fn xcb_free_event(connection: *Connection, event: *GenericEvent) void;
+pub const freeEvent = xcb_free_event;
+
 extern "xcb" fn xcb_setup_roots_iterator(setup: *const Setup) ScreenIterator;
 pub const setupRootsIterator = xcb_setup_roots_iterator;

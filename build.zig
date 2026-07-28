@@ -8,8 +8,8 @@ pub fn build(b: *std.Build) void {
         .name = "xcb_zig_generator",
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/main.zig"),
-            .target = target,
-            .optimize = optimize,
+            .target = b.graph.host,
+            .optimize = .Debug,
             .imports = &.{},
         }),
     });
