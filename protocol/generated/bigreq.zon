@@ -1,0 +1,28 @@
+.{
+    .name = "bigreq",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "enable",
+            .params = .{},
+            .returns = "enable_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "enable_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "maximum_request_length", .type = "u32" },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

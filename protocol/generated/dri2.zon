@@ -1,0 +1,338 @@
+.{
+    .name = "dri2",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "attachment",
+            .fields = .{
+                .{ .name = "buffer_front_left", .value = 0 },
+                .{ .name = "buffer_back_left", .value = 1 },
+                .{ .name = "buffer_front_right", .value = 2 },
+                .{ .name = "buffer_back_right", .value = 3 },
+                .{ .name = "buffer_depth", .value = 4 },
+                .{ .name = "buffer_stencil", .value = 5 },
+                .{ .name = "buffer_accum", .value = 6 },
+                .{ .name = "buffer_fake_front_left", .value = 7 },
+                .{ .name = "buffer_fake_front_right", .value = 8 },
+                .{ .name = "buffer_depth_stencil", .value = 9 },
+                .{ .name = "buffer_hiz", .value = 10 },
+            },
+        },
+        .{
+            .name = "driver_type",
+            .fields = .{
+                .{ .name = "dri", .value = 0 },
+                .{ .name = "vdpau", .value = 1 },
+            },
+        },
+        .{
+            .name = "event_type",
+            .fields = .{
+                .{ .name = "exchange_complete", .value = 1 },
+                .{ .name = "blit_complete", .value = 2 },
+                .{ .name = "flip_complete", .value = 3 },
+            },
+        },
+    },
+    .bitmasks = .{},
+    .structs = .{
+        .{
+            .name = "dri2_buffer",
+            .fields = .{
+                .{ .name = "attachment", .type = "u32", .@"enum" = "attachment" },
+                .{ .name = "name", .type = "u32" },
+                .{ .name = "pitch", .type = "u32" },
+                .{ .name = "cpp", .type = "u32" },
+                .{ .name = "flags", .type = "u32" },
+            },
+        },
+        .{
+            .name = "attach_format",
+            .fields = .{
+                .{ .name = "attachment", .type = "u32", .@"enum" = "attachment" },
+                .{ .name = "format", .type = "u32" },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "connect",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "driver_type", .type = "u32", .@"enum" = "driver_type" },
+            },
+            .returns = "connect_reply",
+        },
+        .{
+            .name = "authenticate",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "magic", .type = "u32" },
+            },
+            .returns = "authenticate_reply",
+        },
+        .{
+            .name = "create_drawable",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+            },
+        },
+        .{
+            .name = "destroy_drawable",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+            },
+        },
+        .{
+            .name = "get_buffers",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "count", .type = "u32" },
+                .{ .name = "attachments", .type = "u32", .list = true },
+            },
+            .returns = "get_buffers_reply",
+        },
+        .{
+            .name = "copy_region",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "region", .type = "u32" },
+                .{ .name = "dest", .type = "u32" },
+                .{ .name = "src", .type = "u32" },
+            },
+            .returns = "copy_region_reply",
+        },
+        .{
+            .name = "get_buffers_with_format",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "count", .type = "u32" },
+                .{ .name = "attachments", .type = "attach_format", .list = true },
+            },
+            .returns = "get_buffers_with_format_reply",
+        },
+        .{
+            .name = "swap_buffers",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "target_msc_hi", .type = "u32" },
+                .{ .name = "target_msc_lo", .type = "u32" },
+                .{ .name = "divisor_hi", .type = "u32" },
+                .{ .name = "divisor_lo", .type = "u32" },
+                .{ .name = "remainder_hi", .type = "u32" },
+                .{ .name = "remainder_lo", .type = "u32" },
+            },
+            .returns = "swap_buffers_reply",
+        },
+        .{
+            .name = "get_msc",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+            },
+            .returns = "get_msc_reply",
+        },
+        .{
+            .name = "wait_msc",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "target_msc_hi", .type = "u32" },
+                .{ .name = "target_msc_lo", .type = "u32" },
+                .{ .name = "divisor_hi", .type = "u32" },
+                .{ .name = "divisor_lo", .type = "u32" },
+                .{ .name = "remainder_hi", .type = "u32" },
+                .{ .name = "remainder_lo", .type = "u32" },
+            },
+            .returns = "wait_msc_reply",
+        },
+        .{
+            .name = "wait_sbc",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "target_sbc_hi", .type = "u32" },
+                .{ .name = "target_sbc_lo", .type = "u32" },
+            },
+            .returns = "wait_sbc_reply",
+        },
+        .{
+            .name = "swap_interval",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "interval", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_param",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "param", .type = "u32" },
+            },
+            .returns = "get_param_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+            },
+        },
+        .{
+            .name = "connect_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "driver_name_length", .type = "u32" },
+                .{ .name = "device_name_length", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "driver_name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "driver_name_length",
+                },
+                .{ .name = "alignment_pad", .type = "void", .list = true },
+                .{
+                    .name = "device_name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "device_name_length",
+                },
+            },
+        },
+        .{
+            .name = "authenticate_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "authenticated", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_buffers_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "width", .type = "u32" },
+                .{ .name = "height", .type = "u32" },
+                .{ .name = "count", .type = "u32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "buffers",
+                    .type = "dri2_buffer",
+                    .list = true,
+                    .fieldref = "count",
+                },
+            },
+        },
+        .{
+            .name = "copy_region_reply",
+            .fields = .{
+                .{ .pad = 1 },
+            },
+        },
+        .{
+            .name = "get_buffers_with_format_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "width", .type = "u32" },
+                .{ .name = "height", .type = "u32" },
+                .{ .name = "count", .type = "u32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "buffers",
+                    .type = "dri2_buffer",
+                    .list = true,
+                    .fieldref = "count",
+                },
+            },
+        },
+        .{
+            .name = "swap_buffers_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "swap_hi", .type = "u32" },
+                .{ .name = "swap_lo", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_msc_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ust_hi", .type = "u32" },
+                .{ .name = "ust_lo", .type = "u32" },
+                .{ .name = "msc_hi", .type = "u32" },
+                .{ .name = "msc_lo", .type = "u32" },
+                .{ .name = "sbc_hi", .type = "u32" },
+                .{ .name = "sbc_lo", .type = "u32" },
+            },
+        },
+        .{
+            .name = "wait_msc_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ust_hi", .type = "u32" },
+                .{ .name = "ust_lo", .type = "u32" },
+                .{ .name = "msc_hi", .type = "u32" },
+                .{ .name = "msc_lo", .type = "u32" },
+                .{ .name = "sbc_hi", .type = "u32" },
+                .{ .name = "sbc_lo", .type = "u32" },
+            },
+        },
+        .{
+            .name = "wait_sbc_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ust_hi", .type = "u32" },
+                .{ .name = "ust_lo", .type = "u32" },
+                .{ .name = "msc_hi", .type = "u32" },
+                .{ .name = "msc_lo", .type = "u32" },
+                .{ .name = "sbc_hi", .type = "u32" },
+                .{ .name = "sbc_lo", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_param_reply",
+            .fields = .{
+                .{ .name = "is_param_recognized", .type = "bool" },
+                .{ .name = "value_hi", .type = "u32" },
+                .{ .name = "value_lo", .type = "u32" },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "buffer_swap_complete",
+            .number = 0,
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "event_type", .type = "u16", .@"enum" = "event_type" },
+                .{ .pad = 2 },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "ust_hi", .type = "u32" },
+                .{ .name = "ust_lo", .type = "u32" },
+                .{ .name = "msc_hi", .type = "u32" },
+                .{ .name = "msc_lo", .type = "u32" },
+                .{ .name = "sbc", .type = "u32" },
+            },
+        },
+        .{
+            .name = "invalidate_buffers",
+            .number = 1,
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "drawable", .type = "drawable" },
+            },
+        },
+    },
+    .errors = .{},
+}

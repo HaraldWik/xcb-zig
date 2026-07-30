@@ -1,0 +1,209 @@
+.{
+    .name = "res",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{
+        .{
+            .name = "client_id_mask",
+            .fields = .{
+                .{ .name = "client_xid", .value = 1 },
+                .{ .name = "local_client_pid", .value = 2 },
+            },
+        },
+    },
+    .structs = .{
+        .{
+            .name = "client",
+            .fields = .{
+                .{ .name = "resource_base", .type = "u32" },
+                .{ .name = "resource_mask", .type = "u32" },
+            },
+        },
+        .{
+            .name = "type",
+            .fields = .{
+                .{ .name = "resource_type", .type = "atom" },
+                .{ .name = "count", .type = "u32" },
+            },
+        },
+        .{
+            .name = "client_id_spec",
+            .fields = .{
+                .{ .name = "client", .type = "u32" },
+                .{ .name = "mask", .type = "u32" },
+            },
+        },
+        .{
+            .name = "client_id_value",
+            .fields = .{
+                .{ .name = "spec", .type = "client_id_spec" },
+                .{ .name = "length", .type = "u32" },
+                .{ .name = "value", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "resource_id_spec",
+            .fields = .{
+                .{ .name = "resource", .type = "u32" },
+                .{ .name = "type", .type = "u32" },
+            },
+        },
+        .{
+            .name = "resource_size_spec",
+            .fields = .{
+                .{ .name = "spec", .type = "resource_id_spec" },
+                .{ .name = "bytes", .type = "u32" },
+                .{ .name = "ref_count", .type = "u32" },
+                .{ .name = "use_count", .type = "u32" },
+            },
+        },
+        .{
+            .name = "resource_size_value",
+            .fields = .{
+                .{ .name = "size", .type = "resource_size_spec" },
+                .{ .name = "num_cross_references", .type = "u32" },
+                .{
+                    .name = "cross_references",
+                    .type = "resource_size_spec",
+                    .list = true,
+                    .fieldref = "num_cross_references",
+                },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "client_major", .type = "u8" },
+                .{ .name = "client_minor", .type = "u8" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "query_clients",
+            .params = .{},
+            .returns = "query_clients_reply",
+        },
+        .{
+            .name = "query_client_resources",
+            .params = .{
+                .{ .name = "xid", .type = "u32" },
+            },
+            .returns = "query_client_resources_reply",
+        },
+        .{
+            .name = "query_client_pixmap_bytes",
+            .params = .{
+                .{ .name = "xid", .type = "u32" },
+            },
+            .returns = "query_client_pixmap_bytes_reply",
+        },
+        .{
+            .name = "query_client_ids",
+            .params = .{
+                .{ .name = "num_specs", .type = "u32" },
+                .{
+                    .name = "specs",
+                    .type = "client_id_spec",
+                    .list = true,
+                    .fieldref = "num_specs",
+                },
+            },
+            .returns = "query_client_ids_reply",
+        },
+        .{
+            .name = "query_resource_bytes",
+            .params = .{
+                .{ .name = "client", .type = "u32" },
+                .{ .name = "num_specs", .type = "u32" },
+                .{
+                    .name = "specs",
+                    .type = "resource_id_spec",
+                    .list = true,
+                    .fieldref = "num_specs",
+                },
+            },
+            .returns = "query_resource_bytes_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "server_major", .type = "u16" },
+                .{ .name = "server_minor", .type = "u16" },
+            },
+        },
+        .{
+            .name = "query_clients_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_clients", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "clients",
+                    .type = "client",
+                    .list = true,
+                    .fieldref = "num_clients",
+                },
+            },
+        },
+        .{
+            .name = "query_client_resources_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_types", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "types",
+                    .type = "type",
+                    .list = true,
+                    .fieldref = "num_types",
+                },
+            },
+        },
+        .{
+            .name = "query_client_pixmap_bytes_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "bytes", .type = "u32" },
+                .{ .name = "bytes_overflow", .type = "u32" },
+            },
+        },
+        .{
+            .name = "query_client_ids_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_ids", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "ids",
+                    .type = "client_id_value",
+                    .list = true,
+                    .fieldref = "num_ids",
+                },
+            },
+        },
+        .{
+            .name = "query_resource_bytes_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_sizes", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "sizes",
+                    .type = "resource_size_value",
+                    .list = true,
+                    .fieldref = "num_sizes",
+                },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

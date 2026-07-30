@@ -1,0 +1,342 @@
+.{
+    .name = "sync",
+    .xids = .{
+        .{ .name = "alarm" },
+        .{ .name = "counter" },
+        .{ .name = "fence" },
+    },
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "alarmstate",
+            .fields = .{
+                .{ .name = "active", .value = 0 },
+                .{ .name = "inactive", .value = 1 },
+                .{ .name = "destroyed", .value = 2 },
+            },
+        },
+        .{
+            .name = "testtype",
+            .fields = .{
+                .{ .name = "positive_transition", .value = 0 },
+                .{ .name = "negative_transition", .value = 1 },
+                .{ .name = "positive_comparison", .value = 2 },
+                .{ .name = "negative_comparison", .value = 3 },
+            },
+        },
+        .{
+            .name = "valuetype",
+            .fields = .{
+                .{ .name = "absolute", .value = 0 },
+                .{ .name = "relative", .value = 1 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "ca",
+            .fields = .{
+                .{ .name = "counter", .value = 1 },
+                .{ .name = "value_type", .value = 2 },
+                .{ .name = "value", .value = 4 },
+                .{ .name = "test_type", .value = 8 },
+                .{ .name = "delta", .value = 16 },
+                .{ .name = "events", .value = 32 },
+            },
+        },
+    },
+    .structs = .{
+        .{
+            .name = "int64",
+            .fields = .{
+                .{ .name = "hi", .type = "i32" },
+                .{ .name = "lo", .type = "u32" },
+            },
+        },
+        .{
+            .name = "systemcounter",
+            .fields = .{
+                .{ .name = "counter", .type = "counter" },
+                .{ .name = "resolution", .type = "i64" },
+                .{ .name = "name_len", .type = "u16" },
+                .{
+                    .name = "name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "name_len",
+                },
+                .{ .alignment = 4 },
+            },
+        },
+        .{
+            .name = "trigger",
+            .fields = .{
+                .{ .name = "counter", .type = "counter" },
+                .{ .name = "wait_type", .type = "u32", .@"enum" = "valuetype" },
+                .{ .name = "wait_value", .type = "i64" },
+                .{ .name = "test_type", .type = "u32", .@"enum" = "testtype" },
+            },
+        },
+        .{
+            .name = "waitcondition",
+            .fields = .{
+                .{ .name = "trigger", .type = "trigger" },
+                .{ .name = "event_threshold", .type = "i64" },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "initialize",
+            .params = .{
+                .{ .name = "desired_major_version", .type = "u8" },
+                .{ .name = "desired_minor_version", .type = "u8" },
+            },
+            .returns = "initialize_reply",
+        },
+        .{
+            .name = "list_system_counters",
+            .params = .{},
+            .returns = "list_system_counters_reply",
+        },
+        .{
+            .name = "create_counter",
+            .params = .{
+                .{ .name = "id", .type = "counter" },
+                .{ .name = "initial_value", .type = "i64" },
+            },
+        },
+        .{
+            .name = "destroy_counter",
+            .params = .{
+                .{ .name = "counter", .type = "counter" },
+            },
+        },
+        .{
+            .name = "query_counter",
+            .params = .{
+                .{ .name = "counter", .type = "counter" },
+            },
+            .returns = "query_counter_reply",
+        },
+        .{
+            .name = "await",
+            .params = .{
+                .{ .name = "wait_list", .type = "waitcondition", .list = true },
+            },
+        },
+        .{
+            .name = "change_counter",
+            .params = .{
+                .{ .name = "counter", .type = "counter" },
+                .{ .name = "amount", .type = "i64" },
+            },
+        },
+        .{
+            .name = "set_counter",
+            .params = .{
+                .{ .name = "counter", .type = "counter" },
+                .{ .name = "value", .type = "i64" },
+            },
+        },
+        .{
+            .name = "create_alarm",
+            .params = .{
+                .{ .name = "id", .type = "alarm" },
+                .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
+            },
+        },
+        .{
+            .name = "change_alarm",
+            .params = .{
+                .{ .name = "id", .type = "alarm" },
+                .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
+            },
+        },
+        .{
+            .name = "destroy_alarm",
+            .params = .{
+                .{ .name = "alarm", .type = "alarm" },
+            },
+        },
+        .{
+            .name = "query_alarm",
+            .params = .{
+                .{ .name = "alarm", .type = "alarm" },
+            },
+            .returns = "query_alarm_reply",
+        },
+        .{
+            .name = "set_priority",
+            .params = .{
+                .{ .name = "id", .type = "u32" },
+                .{ .name = "priority", .type = "i32" },
+            },
+        },
+        .{
+            .name = "get_priority",
+            .params = .{
+                .{ .name = "id", .type = "u32" },
+            },
+            .returns = "get_priority_reply",
+        },
+        .{
+            .name = "create_fence",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "fence", .type = "fence" },
+                .{ .name = "initially_triggered", .type = "bool" },
+            },
+        },
+        .{
+            .name = "trigger_fence",
+            .params = .{
+                .{ .name = "fence", .type = "fence" },
+            },
+        },
+        .{
+            .name = "reset_fence",
+            .params = .{
+                .{ .name = "fence", .type = "fence" },
+            },
+        },
+        .{
+            .name = "destroy_fence",
+            .params = .{
+                .{ .name = "fence", .type = "fence" },
+            },
+        },
+        .{
+            .name = "query_fence",
+            .params = .{
+                .{ .name = "fence", .type = "fence" },
+            },
+            .returns = "query_fence_reply",
+        },
+        .{
+            .name = "await_fence",
+            .params = .{
+                .{ .name = "fence_list", .type = "fence", .list = true },
+            },
+        },
+    },
+    .replies = .{
+        .{
+            .name = "initialize_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u8" },
+                .{ .name = "minor_version", .type = "u8" },
+                .{ .pad = 22 },
+            },
+        },
+        .{
+            .name = "list_system_counters_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "counters_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "counters",
+                    .type = "systemcounter",
+                    .list = true,
+                    .fieldref = "counters_len",
+                },
+            },
+        },
+        .{
+            .name = "query_counter_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "counter_value", .type = "i64" },
+            },
+        },
+        .{
+            .name = "query_alarm_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "trigger", .type = "trigger" },
+                .{ .name = "delta", .type = "i64" },
+                .{ .name = "events", .type = "bool" },
+                .{ .name = "state", .type = "u8", .@"enum" = "alarmstate" },
+                .{ .pad = 2 },
+            },
+        },
+        .{
+            .name = "get_priority_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "priority", .type = "i32" },
+            },
+        },
+        .{
+            .name = "query_fence_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "triggered", .type = "bool" },
+                .{ .pad = 23 },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "counter_notify",
+            .number = 0,
+            .fields = .{
+                .{ .name = "kind", .type = "u8" },
+                .{ .name = "counter", .type = "counter" },
+                .{ .name = "wait_value", .type = "i64" },
+                .{ .name = "counter_value", .type = "i64" },
+                .{ .name = "timestamp", .type = "timestamp" },
+                .{ .name = "count", .type = "u16" },
+                .{ .name = "destroyed", .type = "bool" },
+                .{ .pad = 1 },
+            },
+        },
+        .{
+            .name = "alarm_notify",
+            .number = 1,
+            .fields = .{
+                .{ .name = "kind", .type = "u8" },
+                .{ .name = "alarm", .type = "alarm" },
+                .{ .name = "counter_value", .type = "i64" },
+                .{ .name = "alarm_value", .type = "i64" },
+                .{ .name = "timestamp", .type = "timestamp" },
+                .{ .name = "state", .type = "u8", .@"enum" = "alarmstate" },
+                .{ .pad = 3 },
+            },
+        },
+    },
+    .errors = .{
+        .{
+            .name = "counter",
+            .fields = .{
+                .{ .name = "bad_counter", .type = "u32" },
+                .{ .name = "minor_opcode", .type = "u16" },
+                .{ .name = "major_opcode", .type = "u8" },
+            },
+        },
+        .{
+            .name = "alarm",
+            .fields = .{
+                .{ .name = "bad_alarm", .type = "u32" },
+                .{ .name = "minor_opcode", .type = "u16" },
+                .{ .name = "major_opcode", .type = "u8" },
+            },
+        },
+    },
+}

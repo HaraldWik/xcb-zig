@@ -80,6 +80,9 @@ pub fn main(init: std.process.Init) !void {
 }
 
 pub const Protocol = struct {
+    /// e.g "core" or "big_request"
+    name: []const u8,
+
     xids: []const Xid,
     xidunions: []const XidUnion,
     typedefs: []const Typedef,
@@ -214,7 +217,7 @@ pub const Protocol = struct {
 
         try w.writeByte('\n');
         for (self.enums) |e| {
-            try w.print("pub const {f} = struct {{\n", .{snakeCase(e.name)});
+            try w.print("pub const {f} = struct {{\n", .{screamingSnakeCase(e.name)});
             for (e.fields) |field| {
                 try w.print("pub const {f} = {d};\n", .{ snakeCase(field.name), field.value });
             }
@@ -223,7 +226,7 @@ pub const Protocol = struct {
 
         try w.writeByte('\n');
         for (self.bitmasks) |bitmask| {
-            try w.print("pub const {f} = struct {{\n", .{snakeCase(bitmask.name)});
+            try w.print("pub const {f} = struct {{\n", .{screamingSnakeCase(bitmask.name)});
             for (bitmask.fields) |field| {
                 try w.print("pub const {f} = {d};\n", .{ snakeCase(field.name), field.value });
             }
@@ -265,30 +268,26 @@ pub const Protocol = struct {
             try w.writeAll("};\n");
         }
         try w.writeByte('\n');
-        for (self.errors) |err| try emitStruct(err, w);
+        for (self.errors) |err| {
+            var pad_index: usize = 0;
+            try w.print("pub const {f}Error = extern struct {{\n", .{typeCase(err.name)});
+            for (err.fields) |field| {
+                const pad = field.pad orelse field.alignment;
+                if (pad) |bytes| {
+                    try w.print("pad{d}: [{d}]u8,\n", .{ pad_index, bytes });
+                    pad_index += 1;
+                    continue;
+                }
 
-        for (self.requests) |request| {
-            try w.writeByte('\n');
-            try w.print("pub extern \"xcb\" fn xcb_{f}(\n", .{snakeCase(request.name)});
+                const name = field.name orelse continue;
+                const t = field.type orelse continue;
 
-            try w.writeAll("connection: *Connection,\n");
-            for (request.params) |param| {
-                if (param.pad != null or param.alignment != null) continue;
-
-                try w.print("{f}: {s}{f},\n", .{ snakeCase(param.name.?), if (param.list) "[*]const " else "", typeCase(param.type.?) });
+                try w.print("{f}: {s}{f},\n", .{ snakeCase(name), if (field.list) "[*]const " else "", typeCase(t) });
             }
-
-            if (request.returns) |returns| {
-                try w.print(") Cookie({f});\n", .{typeCase(returns)});
-
-                try w.print("pub extern \"xcb\" fn xcb_{f}_reply(connection: *Connection, cookie: Cookie({f}), err: ?*?*GenericError,) *{f};\n", .{ snakeCase(request.name), typeCase(returns), typeCase(returns) });
-            } else {
-                try w.writeAll(") void;\n");
-            }
-
-            try w.print("pub const {f} = xcb_{f};", .{ camelCase(request.name), snakeCase(request.name) });
-            if (request.returns != null) try w.print("pub const {f}Reply = xcb_{f}_reply;", .{ camelCase(request.name), snakeCase(request.name) });
+            try w.writeAll("};\n");
         }
+
+        try emitRequests(self.requests, w, self.name);
     }
 
     fn emitStruct(s: Struct, w: *std.Io.Writer) std.Io.Writer.Error!void {
@@ -309,12 +308,113 @@ pub const Protocol = struct {
         }
         try w.writeAll("};\n");
     }
+
+    fn emitRequests(requests: []const Request, w: *std.Io.Writer, protocol_name: []const u8) std.Io.Writer.Error!void {
+        // proc table
+        try w.print("pub const {f}Dispatch = struct {{\n", .{titleCase(protocol_name)});
+        for (requests) |request| {
+            try w.print("   xcb_{s}: ?*const fn (connection: Connection", .{request.name});
+            if (request.params.len > 0) try w.writeAll(", ");
+            var first = true;
+            for (request.params) |param| {
+                if (param.pad != null or param.alignment != null) continue;
+
+                if (!first) try w.writeAll(",\n");
+
+                try w.print("{f}: {s}{f}", .{
+                    snakeCase(param.name.?),
+                    if (param.list) "[*]const " else "",
+                    typeCase(param.type.?),
+                });
+
+                first = false;
+            }
+            try w.writeAll(") callconv(.c) ");
+            if (request.returns) |returns| {
+                try w.print("Cookie({f}) = null,\n", .{typeCase(returns)});
+
+                try w.print("   xcb_{s}_reply: ?*const fn (connection: Connection, cookie: Cookie({f}), err: ?*?*GenericError) callconv(.c) *{f} = null,\n", .{ request.name, typeCase(returns), typeCase(returns) });
+            } else {
+                try w.writeAll("void = null,\n");
+            }
+        }
+        try w.writeAll("};\n");
+
+        // dispatch and wrapper
+        try w.print(
+            \\pub const {f}Wrapper = {f}WrapperWithCustomDispatch({f}Dispatch);
+            \\pub fn {f}WrapperWithCustomDispatch(DispatchType: type) type {{
+            \\    return struct {{
+            \\        const Self = @This();
+            \\        pub const Dispatch = DispatchType;
+            \\
+            \\        dispatch: Dispatch,
+            \\
+            \\        pub fn load(dynlib: *std.DynLib) Self {{
+            \\            var self: Self = .{{ .dispatch = .{{}} }};
+            \\            inline for (std.meta.fields(Dispatch)) |field| {{
+            \\                if (dynlib.lookup(field.type, field.name)) |cmd_ptr| {{
+            \\                    @field(self.dispatch, field.name) = @ptrCast(cmd_ptr);
+            \\                }}
+            \\            }}
+            \\            return self;
+            \\        }}
+        , .{ titleCase(protocol_name), titleCase(protocol_name), titleCase(protocol_name), titleCase(protocol_name) });
+
+        for (requests) |request| {
+            try w.print("pub fn {f}(", .{camelCase(request.name)});
+            try w.print("self: Self, connection: Connection", .{});
+            if (request.params.len > 0) try w.writeAll(", ");
+            for (request.params, 0..) |param, i| {
+                if (param.pad != null or param.alignment != null) continue;
+                const is_last = i == request.params.len - 1;
+
+                try w.print("{f}: {s}{f}", .{ snakeCase(param.name.?), if (param.list) "[*]const " else "", typeCase(param.type.?) });
+
+                if (!is_last) try w.writeAll(",");
+            }
+            try w.writeAll(") ");
+            if (request.returns) |returns|
+                try w.print("Cookie({f}) {{\nreturn ", .{typeCase(returns)})
+            else
+                try w.writeAll("void {\n");
+
+            try w.print("self.dispatch.xcb_{s}.?(", .{request.name});
+            try w.print("connection", .{});
+            if (request.params.len > 0) try w.writeAll(", ");
+            var first = true;
+            for (request.params) |param| {
+                if (param.pad != null or param.alignment != null) continue;
+
+                if (!first) try w.writeAll(",");
+
+                try w.print("{f}", .{snakeCase(param.name.?)});
+
+                first = false;
+            }
+            try w.writeAll(");\n}\n");
+
+            const returns = request.returns orelse continue;
+
+            try w.print(
+                \\pub fn {f}Reply(self: Self, connection: Connection, cookie: Cookie({f}), err: ?*?*GenericError) *{f} {{
+                \\    return self.dispatch.xcb_{s}_reply.?(connection, cookie, err);
+                \\}}
+                \\
+            ,
+                .{ camelCase(request.name), typeCase(returns), typeCase(returns), request.name },
+            );
+        }
+
+        try w.writeAll("    };\n}\n");
+    }
 };
 
 const Case = enum {
     title,
     camel,
     snake,
+    screaming_snake,
     type,
 };
 
@@ -324,7 +424,7 @@ fn formatCaseImpl(comptime case: Case, comptime trim: bool) type {
             if (bytes.len == 0) return writer.writeAll("unknown");
             const str = if (trim) trimPrefix(bytes) else bytes;
 
-            if (case == .snake and std.zig.Token.getKeyword(str) != null or std.ascii.isDigit(str[0])) {
+            if (case == .snake and std.mem.eql(u8, str, "type") or std.zig.Token.getKeyword(str) != null or std.ascii.isDigit(str[0])) {
                 try writer.print("@\"{s}\"", .{str});
                 return;
             }
@@ -347,6 +447,28 @@ fn formatCaseImpl(comptime case: Case, comptime trim: bool) type {
                             try writer.writeByte(std.ascii.toLower(c));
                         } else {
                             try writer.writeByte(c);
+                        }
+
+                        prev = c;
+                    }
+                },
+                .screaming_snake => {
+                    var prev: ?u8 = null;
+
+                    for (str, 0..) |c, i| {
+                        if (std.ascii.isUpper(c)) {
+                            const needs_separator =
+                                i != 0 and
+                                prev != '_' and
+                                (prev != null and !std.ascii.isUpper(prev.?));
+
+                            if (needs_separator) {
+                                try writer.writeByte('_');
+                            }
+
+                            try writer.writeByte(std.ascii.toUpper(c));
+                        } else {
+                            try writer.writeByte(std.ascii.toUpper(c));
                         }
 
                         prev = c;
@@ -438,6 +560,14 @@ fn snakeCase(bytes: []const u8) std.fmt.Alt([]const u8, formatCaseImpl(.snake, f
 }
 
 fn snakeCaseTrim(bytes: []const u8) std.fmt.Alt([]const u8, formatCaseImpl(.snake, true).f) {
+    return .{ .data = bytes };
+}
+
+fn screamingSnakeCase(bytes: []const u8) std.fmt.Alt([]const u8, formatCaseImpl(.screaming_snake, false).f) {
+    return .{ .data = bytes };
+}
+
+fn screamingSnakeCaseTrim(bytes: []const u8) std.fmt.Alt([]const u8, formatCaseImpl(.screaming_snake, true).f) {
     return .{ .data = bytes };
 }
 

@@ -1,0 +1,187 @@
+.{
+    .name = "xvmc",
+    .xids = .{
+        .{ .name = "context" },
+        .{ .name = "surface" },
+        .{ .name = "subpicture" },
+    },
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{
+        .{
+            .name = "surface_info",
+            .fields = .{
+                .{ .name = "id", .type = "surface" },
+                .{ .name = "chroma_format", .type = "u16" },
+                .{ .name = "pad0", .type = "u16" },
+                .{ .name = "max_width", .type = "u16" },
+                .{ .name = "max_height", .type = "u16" },
+                .{ .name = "subpicture_max_width", .type = "u16" },
+                .{ .name = "subpicture_max_height", .type = "u16" },
+                .{ .name = "mc_type", .type = "u32" },
+                .{ .name = "flags", .type = "u32" },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{},
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "list_surface_types",
+            .params = .{
+                .{ .name = "port_id", .type = "port" },
+            },
+            .returns = "list_surface_types_reply",
+        },
+        .{
+            .name = "create_context",
+            .params = .{
+                .{ .name = "context_id", .type = "context" },
+                .{ .name = "port_id", .type = "port" },
+                .{ .name = "surface_id", .type = "surface" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "flags", .type = "u32" },
+            },
+            .returns = "create_context_reply",
+        },
+        .{
+            .name = "destroy_context",
+            .params = .{
+                .{ .name = "context_id", .type = "context" },
+            },
+        },
+        .{
+            .name = "create_surface",
+            .params = .{
+                .{ .name = "surface_id", .type = "surface" },
+                .{ .name = "context_id", .type = "context" },
+            },
+            .returns = "create_surface_reply",
+        },
+        .{
+            .name = "destroy_surface",
+            .params = .{
+                .{ .name = "surface_id", .type = "surface" },
+            },
+        },
+        .{
+            .name = "create_subpicture",
+            .params = .{
+                .{ .name = "subpicture_id", .type = "subpicture" },
+                .{ .name = "context", .type = "context" },
+                .{ .name = "xvimage_id", .type = "u32" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+            },
+            .returns = "create_subpicture_reply",
+        },
+        .{
+            .name = "destroy_subpicture",
+            .params = .{
+                .{ .name = "subpicture_id", .type = "subpicture" },
+            },
+        },
+        .{
+            .name = "list_subpicture_types",
+            .params = .{
+                .{ .name = "port_id", .type = "port" },
+                .{ .name = "surface_id", .type = "surface" },
+            },
+            .returns = "list_subpicture_types_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major", .type = "u32" },
+                .{ .name = "minor", .type = "u32" },
+            },
+        },
+        .{
+            .name = "list_surface_types_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "surfaces",
+                    .type = "surface_info",
+                    .list = true,
+                    .fieldref = "num",
+                },
+            },
+        },
+        .{
+            .name = "create_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "width_actual", .type = "u16" },
+                .{ .name = "height_actual", .type = "u16" },
+                .{ .name = "flags_return", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "priv_data",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "length",
+                },
+            },
+        },
+        .{
+            .name = "create_surface_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+                .{
+                    .name = "priv_data",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "length",
+                },
+            },
+        },
+        .{
+            .name = "create_subpicture_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "width_actual", .type = "u16" },
+                .{ .name = "height_actual", .type = "u16" },
+                .{ .name = "num_palette_entries", .type = "u16" },
+                .{ .name = "entry_bytes", .type = "u16" },
+                .{ .name = "component_order", .type = "u8", .list = true },
+                .{ .pad = 12 },
+                .{
+                    .name = "priv_data",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "length",
+                },
+            },
+        },
+        .{
+            .name = "list_subpicture_types_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "types",
+                    .type = "image_format_info",
+                    .list = true,
+                    .fieldref = "num",
+                },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

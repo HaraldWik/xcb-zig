@@ -1,0 +1,106 @@
+.{
+    .name = "dpms",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "dpms_mode",
+            .fields = .{
+                .{ .name = "on", .value = 0 },
+                .{ .name = "standby", .value = 1 },
+                .{ .name = "suspend", .value = 2 },
+                .{ .name = "off", .value = 3 },
+            },
+        },
+    },
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "get_version",
+            .params = .{
+                .{ .name = "client_major_version", .type = "u16" },
+                .{ .name = "client_minor_version", .type = "u16" },
+            },
+            .returns = "get_version_reply",
+        },
+        .{
+            .name = "capable",
+            .params = .{},
+            .returns = "capable_reply",
+        },
+        .{
+            .name = "get_timeouts",
+            .params = .{},
+            .returns = "get_timeouts_reply",
+        },
+        .{
+            .name = "set_timeouts",
+            .params = .{
+                .{ .name = "standby_timeout", .type = "u16" },
+                .{ .name = "suspend_timeout", .type = "u16" },
+                .{ .name = "off_timeout", .type = "u16" },
+            },
+        },
+        .{
+            .name = "enable",
+            .params = .{},
+        },
+        .{
+            .name = "disable",
+            .params = .{},
+        },
+        .{
+            .name = "force_level",
+            .params = .{
+                .{ .name = "power_level", .type = "u16", .@"enum" = "dpms_mode" },
+            },
+        },
+        .{
+            .name = "info",
+            .params = .{},
+            .returns = "info_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "get_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "server_major_version", .type = "u16" },
+                .{ .name = "server_minor_version", .type = "u16" },
+            },
+        },
+        .{
+            .name = "capable_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "capable", .type = "bool" },
+                .{ .pad = 23 },
+            },
+        },
+        .{
+            .name = "get_timeouts_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "standby_timeout", .type = "u16" },
+                .{ .name = "suspend_timeout", .type = "u16" },
+                .{ .name = "off_timeout", .type = "u16" },
+                .{ .pad = 18 },
+            },
+        },
+        .{
+            .name = "info_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "power_level", .type = "u16", .@"enum" = "dpms_mode" },
+                .{ .name = "state", .type = "bool" },
+                .{ .pad = 21 },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

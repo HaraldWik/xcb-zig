@@ -1,0 +1,575 @@
+.{
+    .name = "xv",
+    .xids = .{
+        .{ .name = "port" },
+        .{ .name = "encoding" },
+    },
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "image_format_info_type",
+            .fields = .{
+                .{ .name = "rgb", .value = 0 },
+                .{ .name = "yuv", .value = 1 },
+            },
+        },
+        .{
+            .name = "image_format_info_format",
+            .fields = .{
+                .{ .name = "packed", .value = 0 },
+                .{ .name = "planar", .value = 1 },
+            },
+        },
+        .{
+            .name = "video_notify_reason",
+            .fields = .{
+                .{ .name = "started", .value = 0 },
+                .{ .name = "stopped", .value = 1 },
+                .{ .name = "busy", .value = 2 },
+                .{ .name = "preempted", .value = 3 },
+                .{ .name = "hard_error", .value = 4 },
+            },
+        },
+        .{
+            .name = "scanline_order",
+            .fields = .{
+                .{ .name = "top_to_bottom", .value = 0 },
+                .{ .name = "bottom_to_top", .value = 1 },
+            },
+        },
+        .{
+            .name = "grab_port_status",
+            .fields = .{
+                .{ .name = "success", .value = 0 },
+                .{ .name = "bad_extension", .value = 1 },
+                .{ .name = "already_grabbed", .value = 2 },
+                .{ .name = "invalid_time", .value = 3 },
+                .{ .name = "bad_reply", .value = 4 },
+                .{ .name = "bad_alloc", .value = 5 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "type",
+            .fields = .{
+                .{ .name = "input_mask", .value = 1 },
+                .{ .name = "output_mask", .value = 2 },
+                .{ .name = "video_mask", .value = 4 },
+                .{ .name = "still_mask", .value = 8 },
+                .{ .name = "image_mask", .value = 16 },
+            },
+        },
+        .{
+            .name = "attribute_flag",
+            .fields = .{
+                .{ .name = "gettable", .value = 1 },
+                .{ .name = "settable", .value = 2 },
+            },
+        },
+    },
+    .structs = .{
+        .{
+            .name = "rational",
+            .fields = .{
+                .{ .name = "numerator", .type = "i32" },
+                .{ .name = "denominator", .type = "i32" },
+            },
+        },
+        .{
+            .name = "format",
+            .fields = .{
+                .{ .name = "visual", .type = "visualid" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "adaptor_info",
+            .fields = .{
+                .{ .name = "base_id", .type = "port" },
+                .{ .name = "name_size", .type = "u16" },
+                .{ .name = "num_ports", .type = "u16" },
+                .{ .name = "num_formats", .type = "u16" },
+                .{ .name = "type", .type = "u8" },
+                .{ .pad = 1 },
+                .{
+                    .name = "name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "name_size",
+                },
+                .{ .alignment = 4 },
+                .{
+                    .name = "formats",
+                    .type = "format",
+                    .list = true,
+                    .fieldref = "num_formats",
+                },
+            },
+        },
+        .{
+            .name = "encoding_info",
+            .fields = .{
+                .{ .name = "encoding", .type = "encoding" },
+                .{ .name = "name_size", .type = "u16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .pad = 2 },
+                .{ .name = "rate", .type = "rational" },
+                .{
+                    .name = "name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "name_size",
+                },
+                .{ .alignment = 4 },
+            },
+        },
+        .{
+            .name = "image",
+            .fields = .{
+                .{ .name = "id", .type = "u32" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "data_size", .type = "u32" },
+                .{ .name = "num_planes", .type = "u32" },
+                .{
+                    .name = "pitches",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "num_planes",
+                },
+                .{
+                    .name = "offsets",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "num_planes",
+                },
+                .{
+                    .name = "data",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "data_size",
+                },
+            },
+        },
+        .{
+            .name = "attribute_info",
+            .fields = .{
+                .{ .name = "flags", .type = "u32" },
+                .{ .name = "min", .type = "i32" },
+                .{ .name = "max", .type = "i32" },
+                .{ .name = "size", .type = "u32" },
+                .{
+                    .name = "name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "size",
+                },
+                .{ .alignment = 4 },
+            },
+        },
+        .{
+            .name = "image_format_info",
+            .fields = .{
+                .{ .name = "id", .type = "u32" },
+                .{ .name = "type", .type = "u8", .@"enum" = "image_format_info_type" },
+                .{ .name = "byte_order", .type = "u8", .@"enum" = "image_order" },
+                .{ .pad = 2 },
+                .{ .name = "guid", .type = "u8", .list = true },
+                .{ .name = "bpp", .type = "u8" },
+                .{ .name = "num_planes", .type = "u8" },
+                .{ .pad = 2 },
+                .{ .name = "depth", .type = "u8" },
+                .{ .pad = 3 },
+                .{ .name = "red_mask", .type = "u32" },
+                .{ .name = "green_mask", .type = "u32" },
+                .{ .name = "blue_mask", .type = "u32" },
+                .{ .name = "format", .type = "u8", .@"enum" = "image_format_info_format" },
+                .{ .pad = 3 },
+                .{ .name = "y_sample_bits", .type = "u32" },
+                .{ .name = "u_sample_bits", .type = "u32" },
+                .{ .name = "v_sample_bits", .type = "u32" },
+                .{ .name = "vhorz_y_period", .type = "u32" },
+                .{ .name = "vhorz_u_period", .type = "u32" },
+                .{ .name = "vhorz_v_period", .type = "u32" },
+                .{ .name = "vvert_y_period", .type = "u32" },
+                .{ .name = "vvert_u_period", .type = "u32" },
+                .{ .name = "vvert_v_period", .type = "u32" },
+                .{ .name = "vcomp_order", .type = "u8", .list = true },
+                .{ .name = "vscanline_order", .type = "u8", .@"enum" = "scanline_order" },
+                .{ .pad = 11 },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_extension",
+            .params = .{},
+            .returns = "query_extension_reply",
+        },
+        .{
+            .name = "query_adaptors",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+            .returns = "query_adaptors_reply",
+        },
+        .{
+            .name = "query_encodings",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+            },
+            .returns = "query_encodings_reply",
+        },
+        .{
+            .name = "grab_port",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "time", .type = "timestamp" },
+            },
+            .returns = "grab_port_reply",
+        },
+        .{
+            .name = "ungrab_port",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "time", .type = "timestamp" },
+            },
+        },
+        .{
+            .name = "put_video",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "graphics_context", .type = "gcontext" },
+                .{ .name = "vid_x", .type = "i16" },
+                .{ .name = "vid_y", .type = "i16" },
+                .{ .name = "vid_w", .type = "u16" },
+                .{ .name = "vid_h", .type = "u16" },
+                .{ .name = "drw_x", .type = "i16" },
+                .{ .name = "drw_y", .type = "i16" },
+                .{ .name = "drw_w", .type = "u16" },
+                .{ .name = "drw_h", .type = "u16" },
+            },
+        },
+        .{
+            .name = "put_still",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "graphics_context", .type = "gcontext" },
+                .{ .name = "vid_x", .type = "i16" },
+                .{ .name = "vid_y", .type = "i16" },
+                .{ .name = "vid_w", .type = "u16" },
+                .{ .name = "vid_h", .type = "u16" },
+                .{ .name = "drw_x", .type = "i16" },
+                .{ .name = "drw_y", .type = "i16" },
+                .{ .name = "drw_w", .type = "u16" },
+                .{ .name = "drw_h", .type = "u16" },
+            },
+        },
+        .{
+            .name = "get_video",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "graphics_context", .type = "gcontext" },
+                .{ .name = "vid_x", .type = "i16" },
+                .{ .name = "vid_y", .type = "i16" },
+                .{ .name = "vid_w", .type = "u16" },
+                .{ .name = "vid_h", .type = "u16" },
+                .{ .name = "drw_x", .type = "i16" },
+                .{ .name = "drw_y", .type = "i16" },
+                .{ .name = "drw_w", .type = "u16" },
+                .{ .name = "drw_h", .type = "u16" },
+            },
+        },
+        .{
+            .name = "get_still",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "graphics_context", .type = "gcontext" },
+                .{ .name = "vid_x", .type = "i16" },
+                .{ .name = "vid_y", .type = "i16" },
+                .{ .name = "vid_w", .type = "u16" },
+                .{ .name = "vid_h", .type = "u16" },
+                .{ .name = "drw_x", .type = "i16" },
+                .{ .name = "drw_y", .type = "i16" },
+                .{ .name = "drw_w", .type = "u16" },
+                .{ .name = "drw_h", .type = "u16" },
+            },
+        },
+        .{
+            .name = "stop_video",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "drawable", .type = "drawable" },
+            },
+        },
+        .{
+            .name = "select_video_notify",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "onoff", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "select_port_notify",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "onoff", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "query_best_size",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "vid_w", .type = "u16" },
+                .{ .name = "vid_h", .type = "u16" },
+                .{ .name = "drw_w", .type = "u16" },
+                .{ .name = "drw_h", .type = "u16" },
+                .{ .name = "motion", .type = "bool" },
+                .{ .pad = 3 },
+            },
+            .returns = "query_best_size_reply",
+        },
+        .{
+            .name = "set_port_attribute",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "attribute", .type = "atom" },
+                .{ .name = "value", .type = "i32" },
+            },
+        },
+        .{
+            .name = "get_port_attribute",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "attribute", .type = "atom" },
+            },
+            .returns = "get_port_attribute_reply",
+        },
+        .{
+            .name = "query_port_attributes",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+            },
+            .returns = "query_port_attributes_reply",
+        },
+        .{
+            .name = "list_image_formats",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+            },
+            .returns = "list_image_formats_reply",
+        },
+        .{
+            .name = "query_image_attributes",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "id", .type = "u32" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+            },
+            .returns = "query_image_attributes_reply",
+        },
+        .{
+            .name = "put_image",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "graphics_context", .type = "gcontext" },
+                .{ .name = "id", .type = "u32" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "src_w", .type = "u16" },
+                .{ .name = "src_h", .type = "u16" },
+                .{ .name = "drw_x", .type = "i16" },
+                .{ .name = "drw_y", .type = "i16" },
+                .{ .name = "drw_w", .type = "u16" },
+                .{ .name = "drw_h", .type = "u16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "shm_put_image",
+            .params = .{
+                .{ .name = "port", .type = "port" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "graphics_context", .type = "gcontext" },
+                .{ .name = "shmseg", .type = "seg" },
+                .{ .name = "id", .type = "u32" },
+                .{ .name = "offset", .type = "u32" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "src_w", .type = "u16" },
+                .{ .name = "src_h", .type = "u16" },
+                .{ .name = "drw_x", .type = "i16" },
+                .{ .name = "drw_y", .type = "i16" },
+                .{ .name = "drw_w", .type = "u16" },
+                .{ .name = "drw_h", .type = "u16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "send_event", .type = "u8" },
+                .{ .pad = 3 },
+            },
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_extension_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major", .type = "u16" },
+                .{ .name = "minor", .type = "u16" },
+            },
+        },
+        .{
+            .name = "query_adaptors_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_adaptors", .type = "u16" },
+                .{ .pad = 22 },
+                .{
+                    .name = "info",
+                    .type = "adaptor_info",
+                    .list = true,
+                    .fieldref = "num_adaptors",
+                },
+            },
+        },
+        .{
+            .name = "query_encodings_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_encodings", .type = "u16" },
+                .{ .pad = 22 },
+                .{
+                    .name = "info",
+                    .type = "encoding_info",
+                    .list = true,
+                    .fieldref = "num_encodings",
+                },
+            },
+        },
+        .{
+            .name = "grab_port_reply",
+            .fields = .{
+                .{ .name = "result", .type = "u8", .@"enum" = "grab_port_status" },
+            },
+        },
+        .{
+            .name = "query_best_size_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "actual_width", .type = "u16" },
+                .{ .name = "actual_height", .type = "u16" },
+            },
+        },
+        .{
+            .name = "get_port_attribute_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "value", .type = "i32" },
+            },
+        },
+        .{
+            .name = "query_port_attributes_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_attributes", .type = "u32" },
+                .{ .name = "text_size", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "attributes",
+                    .type = "attribute_info",
+                    .list = true,
+                    .fieldref = "num_attributes",
+                },
+            },
+        },
+        .{
+            .name = "list_image_formats_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_formats", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "format",
+                    .type = "image_format_info",
+                    .list = true,
+                    .fieldref = "num_formats",
+                },
+            },
+        },
+        .{
+            .name = "query_image_attributes_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_planes", .type = "u32" },
+                .{ .name = "data_size", .type = "u32" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .pad = 12 },
+                .{
+                    .name = "pitches",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "num_planes",
+                },
+                .{
+                    .name = "offsets",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "num_planes",
+                },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "video_notify",
+            .number = 0,
+            .fields = .{
+                .{ .name = "reason", .type = "u8", .@"enum" = "video_notify_reason" },
+                .{ .name = "time", .type = "timestamp" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "port", .type = "port" },
+            },
+        },
+        .{
+            .name = "port_notify",
+            .number = 1,
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "time", .type = "timestamp" },
+                .{ .name = "port", .type = "port" },
+                .{ .name = "attribute", .type = "atom" },
+                .{ .name = "value", .type = "i32" },
+            },
+        },
+    },
+    .errors = .{
+        .{
+            .name = "bad_port",
+            .fields = .{},
+        },
+        .{
+            .name = "bad_encoding",
+            .fields = .{},
+        },
+        .{
+            .name = "bad_control",
+            .fields = .{},
+        },
+    },
+}

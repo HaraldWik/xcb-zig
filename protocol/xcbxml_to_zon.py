@@ -94,6 +94,10 @@ def convert_type(t):
     if t is None:
         return None
 
+    # Remove imported namespace prefix (sync:INT64 -> INT64)
+    if ":" in t:
+        t = t.split(":")[-1]
+
     return TYPE_MAP.get(t, t)
 
 
@@ -141,11 +145,7 @@ def snake_case(name):
     if name == "align":
         name = "alignment"
 
-    if name in ZIG_KEYWORDS:
-        name = "@\"" + name + '"'
-
     return name
-
 
 def normalize(obj):
     if isinstance(obj, list):
@@ -160,12 +160,12 @@ def normalize(obj):
         for key, value in obj.items():
             key = snake_case(key)
 
-            if isinstance(value, str):
-                value = snake_case(value)
-
             out[key] = normalize(value)
 
         return out
+
+    if isinstance(obj, str):
+        return snake_case(obj)
 
     return obj
 
@@ -205,6 +205,9 @@ def emit_object(obj, level):
         values = []
 
         for key, value in obj.items():
+            if key in ZIG_KEYWORDS:
+                key = f'@"{key}"'
+
             values.append(
                 f".{key} = {emit_value(value, level)}"
             )
@@ -215,6 +218,9 @@ def emit_object(obj, level):
     out = [".{"]
 
     for key, value in obj.items():
+        if key in ZIG_KEYWORDS:
+            key = f'@"{key}"'
+
         out.append(
             "    " * (level + 1)
             + f".{key} = {emit_value(value, level + 1)},"
@@ -248,6 +254,14 @@ def emit_list(values, level):
 
     return "\n".join(out)
 
+def parse_imports(root):
+    imports = []
+
+    for child in root.findall("import"):
+        if child.text:
+            imports.append(child.text.strip())
+
+    return imports
 
 def parse_fields(node):
     fields = []
@@ -362,9 +376,16 @@ def convert(path):
 
     root = ET.parse(path).getroot()
 
+    header = root.attrib.get("header")
+
+    name = "core" if header == "xproto" else header
+
+    imported = parse_imports(root)
+
     enums, normal_enums, bitmasks = parse_enums(root)
 
     result = {
+        "name": name,
         "xids": [],
         "xidunions": [],
         "typedefs": [],
@@ -380,7 +401,13 @@ def convert(path):
 
     for node in root:
 
+        if node.tag == "import":
+            continue
+
         if node.tag == "xidtype":
+
+            if node.attrib["name"] in imported:
+                continue
 
             result["xids"].append({
                 "name": node.attrib["name"],
@@ -390,9 +417,9 @@ def convert(path):
         elif node.tag == "xidunion":
 
             result["xidunions"].append({
-                "name": node.attrib["name"],
+                "name": snake_case(node.attrib["name"]),
                 "types": [
-                    t.text.strip()
+                    snake_case(t.text.strip())
                     for t in node.findall("type")
                 ],
             })
@@ -400,17 +427,19 @@ def convert(path):
 
         elif node.tag == "typedef":
 
+            if node.attrib["newname"] in imported:
+                continue
+
             result["typedefs"].append({
-                "old": convert_type(
-                    node.attrib["oldname"]
-                ),
-                "new": convert_type(
-                    node.attrib["newname"]
-                ),
+                "old": convert_type(node.attrib["oldname"]),
+                "new": convert_type(node.attrib["newname"]),
             })
 
 
         elif node.tag == "struct":
+
+            if node.attrib["name"] in imported:
+                continue
 
             result["structs"].append({
                 "name": node.attrib["name"],
@@ -419,6 +448,9 @@ def convert(path):
 
 
         elif node.tag == "union":
+
+            if node.attrib["name"] in imported:
+                continue
 
             result["unions"].append({
                 "name": node.attrib["name"],
@@ -449,7 +481,7 @@ def convert(path):
 
 
         elif node.tag == "event":
-            
+
             result["events"].append({
                 "name": node.attrib["name"],
                 "number": int(node.attrib["number"]),
@@ -474,6 +506,7 @@ def convert(path):
                     "number": int(node.attrib["number"]),
                     "fields": ref["fields"],
                 })
+
 
         elif node.tag == "error":
 

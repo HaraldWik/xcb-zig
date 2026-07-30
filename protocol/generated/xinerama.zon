@@ -1,0 +1,119 @@
+.{
+    .name = "xinerama",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{
+        .{
+            .name = "screen_info",
+            .fields = .{
+                .{ .name = "x_org", .type = "i16" },
+                .{ .name = "y_org", .type = "i16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "major", .type = "u8" },
+                .{ .name = "minor", .type = "u8" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "get_state",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+            .returns = "get_state_reply",
+        },
+        .{
+            .name = "get_screen_count",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+            .returns = "get_screen_count_reply",
+        },
+        .{
+            .name = "get_screen_size",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "get_screen_size_reply",
+        },
+        .{
+            .name = "is_active",
+            .params = .{},
+            .returns = "is_active_reply",
+        },
+        .{
+            .name = "query_screens",
+            .params = .{},
+            .returns = "query_screens_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major", .type = "u16" },
+                .{ .name = "minor", .type = "u16" },
+            },
+        },
+        .{
+            .name = "get_state_reply",
+            .fields = .{
+                .{ .name = "state", .type = "u8" },
+                .{ .name = "window", .type = "window" },
+            },
+        },
+        .{
+            .name = "get_screen_count_reply",
+            .fields = .{
+                .{ .name = "screen_count", .type = "u8" },
+                .{ .name = "window", .type = "window" },
+            },
+        },
+        .{
+            .name = "get_screen_size_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "width", .type = "u32" },
+                .{ .name = "height", .type = "u32" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "screen", .type = "u32" },
+            },
+        },
+        .{
+            .name = "is_active_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "state", .type = "u32" },
+            },
+        },
+        .{
+            .name = "query_screens_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "number", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "screen_info",
+                    .type = "screen_info",
+                    .list = true,
+                    .fieldref = "number",
+                },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

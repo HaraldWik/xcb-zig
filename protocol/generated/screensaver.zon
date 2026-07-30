@@ -1,0 +1,133 @@
+.{
+    .name = "screensaver",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "kind",
+            .fields = .{
+                .{ .name = "blanked", .value = 0 },
+                .{ .name = "internal", .value = 1 },
+                .{ .name = "external", .value = 2 },
+            },
+        },
+        .{
+            .name = "state",
+            .fields = .{
+                .{ .name = "off", .value = 0 },
+                .{ .name = "on", .value = 1 },
+                .{ .name = "cycle", .value = 2 },
+                .{ .name = "disabled", .value = 3 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "event",
+            .fields = .{
+                .{ .name = "notify_mask", .value = 1 },
+                .{ .name = "cycle_mask", .value = 2 },
+            },
+        },
+    },
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "client_major_version", .type = "u8" },
+                .{ .name = "client_minor_version", .type = "u8" },
+                .{ .pad = 2 },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "query_info",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+            },
+            .returns = "query_info_reply",
+        },
+        .{
+            .name = "select_input",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "event_mask", .type = "u32" },
+            },
+        },
+        .{
+            .name = "set_attributes",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "x", .type = "i16" },
+                .{ .name = "y", .type = "i16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "border_width", .type = "u16" },
+                .{ .name = "class", .type = "u8", .@"enum" = "window_class" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .name = "visual", .type = "visualid" },
+                .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
+            },
+        },
+        .{
+            .name = "unset_attributes",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+            },
+        },
+        .{
+            .name = "suspend",
+            .params = .{
+                .{ .name = "suspend", .type = "u32" },
+            },
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "server_major_version", .type = "u16" },
+                .{ .name = "server_minor_version", .type = "u16" },
+                .{ .pad = 20 },
+            },
+        },
+        .{
+            .name = "query_info_reply",
+            .fields = .{
+                .{ .name = "state", .type = "u8" },
+                .{ .name = "saver_window", .type = "window" },
+                .{ .name = "ms_until_server", .type = "u32" },
+                .{ .name = "ms_since_user_input", .type = "u32" },
+                .{ .name = "event_mask", .type = "u32" },
+                .{ .name = "kind", .type = "u8", .@"enum" = "kind" },
+                .{ .pad = 7 },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "notify",
+            .number = 0,
+            .fields = .{
+                .{ .name = "state", .type = "u8", .@"enum" = "state" },
+                .{ .name = "time", .type = "timestamp" },
+                .{ .name = "root", .type = "window" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "kind", .type = "u8", .@"enum" = "kind" },
+                .{ .name = "forced", .type = "bool" },
+                .{ .pad = 14 },
+            },
+        },
+    },
+    .errors = .{},
+}

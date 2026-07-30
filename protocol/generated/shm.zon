@@ -1,0 +1,147 @@
+.{
+    .name = "shm",
+    .xids = .{
+        .{ .name = "seg" },
+    },
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{},
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "attach",
+            .params = .{
+                .{ .name = "shmseg", .type = "seg" },
+                .{ .name = "shmid", .type = "u32" },
+                .{ .name = "read_only", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "detach",
+            .params = .{
+                .{ .name = "shmseg", .type = "seg" },
+            },
+        },
+        .{
+            .name = "put_image",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "graphics_context", .type = "gcontext" },
+                .{ .name = "total_width", .type = "u16" },
+                .{ .name = "total_height", .type = "u16" },
+                .{ .name = "src_x", .type = "u16" },
+                .{ .name = "src_y", .type = "u16" },
+                .{ .name = "src_width", .type = "u16" },
+                .{ .name = "src_height", .type = "u16" },
+                .{ .name = "dst_x", .type = "i16" },
+                .{ .name = "dst_y", .type = "i16" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .name = "format", .type = "u8" },
+                .{ .name = "send_event", .type = "bool" },
+                .{ .pad = 1 },
+                .{ .name = "shmseg", .type = "seg" },
+                .{ .name = "offset", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_image",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "x", .type = "i16" },
+                .{ .name = "y", .type = "i16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "plane_mask", .type = "u32" },
+                .{ .name = "format", .type = "u8" },
+                .{ .pad = 3 },
+                .{ .name = "shmseg", .type = "seg" },
+                .{ .name = "offset", .type = "u32" },
+            },
+            .returns = "get_image_reply",
+        },
+        .{
+            .name = "create_pixmap",
+            .params = .{
+                .{ .name = "pid", .type = "pixmap" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .pad = 3 },
+                .{ .name = "shmseg", .type = "seg" },
+                .{ .name = "offset", .type = "u32" },
+            },
+        },
+        .{
+            .name = "attach_fd",
+            .params = .{
+                .{ .name = "shmseg", .type = "seg" },
+                .{ .name = "read_only", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "create_segment",
+            .params = .{
+                .{ .name = "shmseg", .type = "seg" },
+                .{ .name = "size", .type = "u32" },
+                .{ .name = "read_only", .type = "bool" },
+                .{ .pad = 3 },
+            },
+            .returns = "create_segment_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .name = "shared_pixmaps", .type = "bool" },
+                .{ .name = "major_version", .type = "u16" },
+                .{ .name = "minor_version", .type = "u16" },
+                .{ .name = "uid", .type = "u16" },
+                .{ .name = "gid", .type = "u16" },
+                .{ .name = "pixmap_format", .type = "u8" },
+                .{ .pad = 15 },
+            },
+        },
+        .{
+            .name = "get_image_reply",
+            .fields = .{
+                .{ .name = "depth", .type = "u8" },
+                .{ .name = "visual", .type = "visualid" },
+                .{ .name = "size", .type = "u32" },
+            },
+        },
+        .{
+            .name = "create_segment_reply",
+            .fields = .{
+                .{ .name = "nfd", .type = "u8" },
+                .{ .pad = 24 },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "completion",
+            .number = 0,
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "minor_event", .type = "u16" },
+                .{ .name = "major_event", .type = "u8" },
+                .{ .pad = 1 },
+                .{ .name = "shmseg", .type = "seg" },
+                .{ .name = "offset", .type = "u32" },
+            },
+        },
+    },
+    .errors = .{},
+}

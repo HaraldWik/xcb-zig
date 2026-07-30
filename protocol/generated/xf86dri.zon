@@ -1,0 +1,228 @@
+.{
+    .name = "xf86dri",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{
+        .{
+            .name = "drm_clip_rect",
+            .fields = .{
+                .{ .name = "x1", .type = "i16" },
+                .{ .name = "y1", .type = "i16" },
+                .{ .name = "x2", .type = "i16" },
+                .{ .name = "x3", .type = "i16" },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{},
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "query_direct_rendering_capable",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "query_direct_rendering_capable_reply",
+        },
+        .{
+            .name = "open_connection",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "open_connection_reply",
+        },
+        .{
+            .name = "close_connection",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_client_driver_name",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "get_client_driver_name_reply",
+        },
+        .{
+            .name = "create_context",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "visual", .type = "u32" },
+                .{ .name = "context", .type = "u32" },
+            },
+            .returns = "create_context_reply",
+        },
+        .{
+            .name = "destroy_context",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "context", .type = "u32" },
+            },
+        },
+        .{
+            .name = "create_drawable",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "drawable", .type = "u32" },
+            },
+            .returns = "create_drawable_reply",
+        },
+        .{
+            .name = "destroy_drawable",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "drawable", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_drawable_info",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "drawable", .type = "u32" },
+            },
+            .returns = "get_drawable_info_reply",
+        },
+        .{
+            .name = "get_device_info",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "get_device_info_reply",
+        },
+        .{
+            .name = "auth_connection",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "magic", .type = "u32" },
+            },
+            .returns = "auth_connection_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "dri_major_version", .type = "u16" },
+                .{ .name = "dri_minor_version", .type = "u16" },
+                .{ .name = "dri_minor_patch", .type = "u32" },
+            },
+        },
+        .{
+            .name = "query_direct_rendering_capable_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "is_capable", .type = "bool" },
+            },
+        },
+        .{
+            .name = "open_connection_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "sarea_handle_low", .type = "u32" },
+                .{ .name = "sarea_handle_high", .type = "u32" },
+                .{ .name = "bus_id_len", .type = "u32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "bus_id",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "bus_id_len",
+                },
+            },
+        },
+        .{
+            .name = "get_client_driver_name_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "client_driver_major_version", .type = "u32" },
+                .{ .name = "client_driver_minor_version", .type = "u32" },
+                .{ .name = "client_driver_patch_version", .type = "u32" },
+                .{ .name = "client_driver_name_len", .type = "u32" },
+                .{ .pad = 8 },
+                .{
+                    .name = "client_driver_name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "client_driver_name_len",
+                },
+            },
+        },
+        .{
+            .name = "create_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "hw_context", .type = "u32" },
+            },
+        },
+        .{
+            .name = "create_drawable_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "hw_drawable_handle", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_drawable_info_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "drawable_table_index", .type = "u32" },
+                .{ .name = "drawable_table_stamp", .type = "u32" },
+                .{ .name = "drawable_origin_x", .type = "i16" },
+                .{ .name = "drawable_origin_y", .type = "i16" },
+                .{ .name = "drawable_size_w", .type = "i16" },
+                .{ .name = "drawable_size_h", .type = "i16" },
+                .{ .name = "num_clip_rects", .type = "u32" },
+                .{ .name = "back_x", .type = "i16" },
+                .{ .name = "back_y", .type = "i16" },
+                .{ .name = "num_back_clip_rects", .type = "u32" },
+                .{
+                    .name = "clip_rects",
+                    .type = "drm_clip_rect",
+                    .list = true,
+                    .fieldref = "num_clip_rects",
+                },
+                .{
+                    .name = "back_clip_rects",
+                    .type = "drm_clip_rect",
+                    .list = true,
+                    .fieldref = "num_back_clip_rects",
+                },
+            },
+        },
+        .{
+            .name = "get_device_info_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "framebuffer_handle_low", .type = "u32" },
+                .{ .name = "framebuffer_handle_high", .type = "u32" },
+                .{ .name = "framebuffer_origin_offset", .type = "u32" },
+                .{ .name = "framebuffer_size", .type = "u32" },
+                .{ .name = "framebuffer_stride", .type = "u32" },
+                .{ .name = "device_private_size", .type = "u32" },
+                .{
+                    .name = "device_private",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "device_private_size",
+                },
+            },
+        },
+        .{
+            .name = "auth_connection_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "authenticated", .type = "u32" },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

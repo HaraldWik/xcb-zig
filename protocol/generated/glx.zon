@@ -1,0 +1,1923 @@
+.{
+    .name = "glx",
+    .xids = .{
+        .{ .name = "pixmap" },
+        .{ .name = "context" },
+        .{ .name = "pbuffer" },
+        .{ .name = "window" },
+        .{ .name = "fbconfig" },
+    },
+    .xidunions = .{
+        .{
+            .name = "drawable",
+            .types = .{
+                "xproto_window",
+                "pbuffer",
+                "glx_pixmap",
+                "glx_window",
+            },
+        },
+    },
+    .typedefs = .{
+        .{ .old = "float", .new = "float32" },
+        .{ .old = "double", .new = "float64" },
+        .{ .old = "u32", .new = "bool32" },
+        .{ .old = "u32", .new = "context_tag" },
+    },
+    .enums = .{
+        .{
+            .name = "pbcet",
+            .fields = .{
+                .{ .name = "damaged", .value = 32791 },
+                .{ .name = "saved", .value = 32792 },
+            },
+        },
+        .{
+            .name = "pbcdt",
+            .fields = .{
+                .{ .name = "window", .value = 32793 },
+                .{ .name = "pbuffer", .value = 32794 },
+            },
+        },
+        .{
+            .name = "rm",
+            .fields = .{
+                .{ .name = "gl_render", .value = 7168 },
+                .{ .name = "gl_feedback", .value = 7169 },
+                .{ .name = "gl_select", .value = 7170 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "graphics_context",
+            .fields = .{
+                .{ .name = "gl_current_bit", .value = 1 },
+                .{ .name = "gl_point_bit", .value = 2 },
+                .{ .name = "gl_line_bit", .value = 4 },
+                .{ .name = "gl_polygon_bit", .value = 8 },
+                .{ .name = "gl_polygon_stipple_bit", .value = 16 },
+                .{ .name = "gl_pixel_mode_bit", .value = 32 },
+                .{ .name = "gl_lighting_bit", .value = 64 },
+                .{ .name = "gl_fog_bit", .value = 128 },
+                .{ .name = "gl_depth_buffer_bit", .value = 256 },
+                .{ .name = "gl_accum_buffer_bit", .value = 512 },
+                .{ .name = "gl_stencil_buffer_bit", .value = 1024 },
+                .{ .name = "gl_viewport_bit", .value = 2048 },
+                .{ .name = "gl_transform_bit", .value = 4096 },
+                .{ .name = "gl_enable_bit", .value = 8192 },
+                .{ .name = "gl_color_buffer_bit", .value = 16384 },
+                .{ .name = "gl_hint_bit", .value = 32768 },
+                .{ .name = "gl_eval_bit", .value = 65536 },
+                .{ .name = "gl_list_bit", .value = 131072 },
+                .{ .name = "gl_texture_bit", .value = 262144 },
+                .{ .name = "gl_scissor_bit", .value = 524288 },
+                .{ .name = "gl_all_attrib_bits", .value = 16777215 },
+            },
+        },
+    },
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "render",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "render_large",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "request_num", .type = "u16" },
+                .{ .name = "request_total", .type = "u16" },
+                .{ .name = "data_len", .type = "u32" },
+                .{
+                    .name = "data",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "data_len",
+                },
+            },
+        },
+        .{
+            .name = "create_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+                .{ .name = "visual", .type = "visualid" },
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "share_list", .type = "context" },
+                .{ .name = "is_direct", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "destroy_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+            },
+        },
+        .{
+            .name = "make_current",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "context", .type = "context" },
+                .{ .name = "old_context_tag", .type = "context_tag" },
+            },
+            .returns = "make_current_reply",
+        },
+        .{
+            .name = "is_direct",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+            },
+            .returns = "is_direct_reply",
+        },
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "wait_gl",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+            },
+        },
+        .{
+            .name = "wait_x",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+            },
+        },
+        .{
+            .name = "copy_context",
+            .params = .{
+                .{ .name = "src", .type = "context" },
+                .{ .name = "dest", .type = "context" },
+                .{ .name = "mask", .type = "u32" },
+                .{ .name = "src_context_tag", .type = "context_tag" },
+            },
+        },
+        .{
+            .name = "swap_buffers",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "drawable", .type = "drawable" },
+            },
+        },
+        .{
+            .name = "use_x_font",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "font", .type = "font" },
+                .{ .name = "first", .type = "u32" },
+                .{ .name = "count", .type = "u32" },
+                .{ .name = "list_base", .type = "u32" },
+            },
+        },
+        .{
+            .name = "create_glx_pixmap",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "visual", .type = "visualid" },
+                .{ .name = "pixmap", .type = "pixmap" },
+                .{ .name = "glx_pixmap", .type = "pixmap" },
+            },
+        },
+        .{
+            .name = "get_visual_configs",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "get_visual_configs_reply",
+        },
+        .{
+            .name = "destroy_glx_pixmap",
+            .params = .{
+                .{ .name = "glx_pixmap", .type = "pixmap" },
+            },
+        },
+        .{
+            .name = "vendor_private",
+            .params = .{
+                .{ .name = "vendor_code", .type = "u32" },
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "vendor_private_with_reply",
+            .params = .{
+                .{ .name = "vendor_code", .type = "u32" },
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+            .returns = "vendor_private_with_reply_reply",
+        },
+        .{
+            .name = "query_extensions_string",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "query_extensions_string_reply",
+        },
+        .{
+            .name = "query_server_string",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "name", .type = "u32" },
+            },
+            .returns = "query_server_string_reply",
+        },
+        .{
+            .name = "client_info",
+            .params = .{
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+                .{ .name = "str_len", .type = "u32" },
+                .{
+                    .name = "string",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "str_len",
+                },
+            },
+        },
+        .{
+            .name = "get_fb_configs",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "get_fb_configs_reply",
+        },
+        .{
+            .name = "create_pixmap",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "fbconfig", .type = "fbconfig" },
+                .{ .name = "pixmap", .type = "pixmap" },
+                .{ .name = "glx_pixmap", .type = "pixmap" },
+                .{ .name = "num_attribs", .type = "u32" },
+                .{ .name = "attribs", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "destroy_pixmap",
+            .params = .{
+                .{ .name = "glx_pixmap", .type = "pixmap" },
+            },
+        },
+        .{
+            .name = "create_new_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+                .{ .name = "fbconfig", .type = "fbconfig" },
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "render_type", .type = "u32" },
+                .{ .name = "share_list", .type = "context" },
+                .{ .name = "is_direct", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "query_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+            },
+            .returns = "query_context_reply",
+        },
+        .{
+            .name = "make_context_current",
+            .params = .{
+                .{ .name = "old_context_tag", .type = "context_tag" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "read_drawable", .type = "drawable" },
+                .{ .name = "context", .type = "context" },
+            },
+            .returns = "make_context_current_reply",
+        },
+        .{
+            .name = "create_pbuffer",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "fbconfig", .type = "fbconfig" },
+                .{ .name = "pbuffer", .type = "pbuffer" },
+                .{ .name = "num_attribs", .type = "u32" },
+                .{ .name = "attribs", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "destroy_pbuffer",
+            .params = .{
+                .{ .name = "pbuffer", .type = "pbuffer" },
+            },
+        },
+        .{
+            .name = "get_drawable_attributes",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+            },
+            .returns = "get_drawable_attributes_reply",
+        },
+        .{
+            .name = "change_drawable_attributes",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "num_attribs", .type = "u32" },
+                .{ .name = "attribs", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "create_window",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "fbconfig", .type = "fbconfig" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "glx_window", .type = "window" },
+                .{ .name = "num_attribs", .type = "u32" },
+                .{ .name = "attribs", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "delete_window",
+            .params = .{
+                .{ .name = "glxwindow", .type = "window" },
+            },
+        },
+        .{
+            .name = "set_client_info_arb",
+            .params = .{
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+                .{ .name = "num_versions", .type = "u32" },
+                .{ .name = "gl_str_len", .type = "u32" },
+                .{ .name = "glx_str_len", .type = "u32" },
+                .{ .name = "gl_versions", .type = "u32", .list = true },
+                .{
+                    .name = "gl_extension_string",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "gl_str_len",
+                },
+                .{
+                    .name = "glx_extension_string",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "glx_str_len",
+                },
+            },
+        },
+        .{
+            .name = "create_context_attribs_arb",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+                .{ .name = "fbconfig", .type = "fbconfig" },
+                .{ .name = "screen", .type = "u32" },
+                .{ .name = "share_list", .type = "context" },
+                .{ .name = "is_direct", .type = "bool" },
+                .{ .pad = 3 },
+                .{ .name = "num_attribs", .type = "u32" },
+                .{ .name = "attribs", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "set_client_info2_arb",
+            .params = .{
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+                .{ .name = "num_versions", .type = "u32" },
+                .{ .name = "gl_str_len", .type = "u32" },
+                .{ .name = "glx_str_len", .type = "u32" },
+                .{ .name = "gl_versions", .type = "u32", .list = true },
+                .{
+                    .name = "gl_extension_string",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "gl_str_len",
+                },
+                .{
+                    .name = "glx_extension_string",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "glx_str_len",
+                },
+            },
+        },
+        .{
+            .name = "new_list",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "list", .type = "u32" },
+                .{ .name = "mode", .type = "u32" },
+            },
+        },
+        .{
+            .name = "end_list",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+            },
+        },
+        .{
+            .name = "delete_lists",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "list", .type = "u32" },
+                .{ .name = "range", .type = "i32" },
+            },
+        },
+        .{
+            .name = "gen_lists",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "range", .type = "i32" },
+            },
+            .returns = "gen_lists_reply",
+        },
+        .{
+            .name = "feedback_buffer",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "size", .type = "i32" },
+                .{ .name = "type", .type = "i32" },
+            },
+        },
+        .{
+            .name = "select_buffer",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "size", .type = "i32" },
+            },
+        },
+        .{
+            .name = "render_mode",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "mode", .type = "u32" },
+            },
+            .returns = "render_mode_reply",
+        },
+        .{
+            .name = "finish",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+            },
+            .returns = "finish_reply",
+        },
+        .{
+            .name = "pixel_storef",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "pname", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+            },
+        },
+        .{
+            .name = "pixel_storei",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "pname", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+            },
+        },
+        .{
+            .name = "read_pixels",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "x", .type = "i32" },
+                .{ .name = "y", .type = "i32" },
+                .{ .name = "width", .type = "i32" },
+                .{ .name = "height", .type = "i32" },
+                .{ .name = "format", .type = "u32" },
+                .{ .name = "type", .type = "u32" },
+                .{ .name = "swap_bytes", .type = "bool" },
+                .{ .name = "lsb_first", .type = "bool" },
+            },
+            .returns = "read_pixels_reply",
+        },
+        .{
+            .name = "get_booleanv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "pname", .type = "i32" },
+            },
+            .returns = "get_booleanv_reply",
+        },
+        .{
+            .name = "get_clip_plane",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "plane", .type = "i32" },
+            },
+            .returns = "get_clip_plane_reply",
+        },
+        .{
+            .name = "get_doublev",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_doublev_reply",
+        },
+        .{
+            .name = "get_error",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+            },
+            .returns = "get_error_reply",
+        },
+        .{
+            .name = "get_floatv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_floatv_reply",
+        },
+        .{
+            .name = "get_integerv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_integerv_reply",
+        },
+        .{
+            .name = "get_lightfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "light", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_lightfv_reply",
+        },
+        .{
+            .name = "get_lightiv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "light", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_lightiv_reply",
+        },
+        .{
+            .name = "get_mapdv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "query", .type = "u32" },
+            },
+            .returns = "get_mapdv_reply",
+        },
+        .{
+            .name = "get_mapfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "query", .type = "u32" },
+            },
+            .returns = "get_mapfv_reply",
+        },
+        .{
+            .name = "get_mapiv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "query", .type = "u32" },
+            },
+            .returns = "get_mapiv_reply",
+        },
+        .{
+            .name = "get_materialfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "face", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_materialfv_reply",
+        },
+        .{
+            .name = "get_materialiv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "face", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_materialiv_reply",
+        },
+        .{
+            .name = "get_pixel_mapfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "map", .type = "u32" },
+            },
+            .returns = "get_pixel_mapfv_reply",
+        },
+        .{
+            .name = "get_pixel_mapuiv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "map", .type = "u32" },
+            },
+            .returns = "get_pixel_mapuiv_reply",
+        },
+        .{
+            .name = "get_pixel_mapusv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "map", .type = "u32" },
+            },
+            .returns = "get_pixel_mapusv_reply",
+        },
+        .{
+            .name = "get_polygon_stipple",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "lsb_first", .type = "bool" },
+            },
+            .returns = "get_polygon_stipple_reply",
+        },
+        .{
+            .name = "get_string",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "name", .type = "u32" },
+            },
+            .returns = "get_string_reply",
+        },
+        .{
+            .name = "get_tex_envfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_envfv_reply",
+        },
+        .{
+            .name = "get_tex_enviv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_enviv_reply",
+        },
+        .{
+            .name = "get_tex_gendv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "coord", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_gendv_reply",
+        },
+        .{
+            .name = "get_tex_genfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "coord", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_genfv_reply",
+        },
+        .{
+            .name = "get_tex_geniv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "coord", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_geniv_reply",
+        },
+        .{
+            .name = "get_tex_image",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "level", .type = "i32" },
+                .{ .name = "format", .type = "u32" },
+                .{ .name = "type", .type = "u32" },
+                .{ .name = "swap_bytes", .type = "bool" },
+            },
+            .returns = "get_tex_image_reply",
+        },
+        .{
+            .name = "get_tex_parameterfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_parameterfv_reply",
+        },
+        .{
+            .name = "get_tex_parameteriv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_parameteriv_reply",
+        },
+        .{
+            .name = "get_tex_level_parameterfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "level", .type = "i32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_level_parameterfv_reply",
+        },
+        .{
+            .name = "get_tex_level_parameteriv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "level", .type = "i32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_tex_level_parameteriv_reply",
+        },
+        .{
+            .name = "is_enabled",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "capability", .type = "u32" },
+            },
+            .returns = "is_enabled_reply",
+        },
+        .{
+            .name = "is_list",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "list", .type = "u32" },
+            },
+            .returns = "is_list_reply",
+        },
+        .{
+            .name = "flush",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+            },
+        },
+        .{
+            .name = "are_textures_resident",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "n", .type = "i32" },
+                .{
+                    .name = "textures",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+            .returns = "are_textures_resident_reply",
+        },
+        .{
+            .name = "delete_textures",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "n", .type = "i32" },
+                .{
+                    .name = "textures",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "gen_textures",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "n", .type = "i32" },
+            },
+            .returns = "gen_textures_reply",
+        },
+        .{
+            .name = "is_texture",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "texture", .type = "u32" },
+            },
+            .returns = "is_texture_reply",
+        },
+        .{
+            .name = "get_color_table",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "format", .type = "u32" },
+                .{ .name = "type", .type = "u32" },
+                .{ .name = "swap_bytes", .type = "bool" },
+            },
+            .returns = "get_color_table_reply",
+        },
+        .{
+            .name = "get_color_table_parameterfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_color_table_parameterfv_reply",
+        },
+        .{
+            .name = "get_color_table_parameteriv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_color_table_parameteriv_reply",
+        },
+        .{
+            .name = "get_convolution_filter",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "format", .type = "u32" },
+                .{ .name = "type", .type = "u32" },
+                .{ .name = "swap_bytes", .type = "bool" },
+            },
+            .returns = "get_convolution_filter_reply",
+        },
+        .{
+            .name = "get_convolution_parameterfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_convolution_parameterfv_reply",
+        },
+        .{
+            .name = "get_convolution_parameteriv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_convolution_parameteriv_reply",
+        },
+        .{
+            .name = "get_separable_filter",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "format", .type = "u32" },
+                .{ .name = "type", .type = "u32" },
+                .{ .name = "swap_bytes", .type = "bool" },
+            },
+            .returns = "get_separable_filter_reply",
+        },
+        .{
+            .name = "get_histogram",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "format", .type = "u32" },
+                .{ .name = "type", .type = "u32" },
+                .{ .name = "swap_bytes", .type = "bool" },
+                .{ .name = "reset", .type = "bool" },
+            },
+            .returns = "get_histogram_reply",
+        },
+        .{
+            .name = "get_histogram_parameterfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_histogram_parameterfv_reply",
+        },
+        .{
+            .name = "get_histogram_parameteriv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_histogram_parameteriv_reply",
+        },
+        .{
+            .name = "get_minmax",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "format", .type = "u32" },
+                .{ .name = "type", .type = "u32" },
+                .{ .name = "swap_bytes", .type = "bool" },
+                .{ .name = "reset", .type = "bool" },
+            },
+            .returns = "get_minmax_reply",
+        },
+        .{
+            .name = "get_minmax_parameterfv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_minmax_parameterfv_reply",
+        },
+        .{
+            .name = "get_minmax_parameteriv",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_minmax_parameteriv_reply",
+        },
+        .{
+            .name = "get_compressed_tex_image_arb",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "level", .type = "i32" },
+            },
+            .returns = "get_compressed_tex_image_arb_reply",
+        },
+        .{
+            .name = "delete_queries_arb",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "n", .type = "i32" },
+                .{
+                    .name = "ids",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "gen_queries_arb",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "n", .type = "i32" },
+            },
+            .returns = "gen_queries_arb_reply",
+        },
+        .{
+            .name = "is_query_arb",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "id", .type = "u32" },
+            },
+            .returns = "is_query_arb_reply",
+        },
+        .{
+            .name = "get_queryiv_arb",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "target", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_queryiv_arb_reply",
+        },
+        .{
+            .name = "get_query_objectiv_arb",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "id", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_query_objectiv_arb_reply",
+        },
+        .{
+            .name = "get_query_objectuiv_arb",
+            .params = .{
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .name = "id", .type = "u32" },
+                .{ .name = "pname", .type = "u32" },
+            },
+            .returns = "get_query_objectuiv_arb_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "make_current_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .pad = 20 },
+            },
+        },
+        .{
+            .name = "is_direct_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "is_direct", .type = "bool" },
+                .{ .pad = 23 },
+            },
+        },
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+                .{ .pad = 16 },
+            },
+        },
+        .{
+            .name = "get_visual_configs_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_visuals", .type = "u32" },
+                .{ .name = "num_properties", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "property_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "length",
+                },
+            },
+        },
+        .{
+            .name = "vendor_private_with_reply_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "retval", .type = "u32" },
+                .{ .name = "data1", .type = "u8", .list = true },
+                .{ .name = "data2", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "query_extensions_string_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .pad = 16 },
+            },
+        },
+        .{
+            .name = "query_server_string_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "str_len", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "string",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "str_len",
+                },
+            },
+        },
+        .{
+            .name = "get_fb_configs_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_fb_configs", .type = "u32" },
+                .{ .name = "num_properties", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "property_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "length",
+                },
+            },
+        },
+        .{
+            .name = "query_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_attribs", .type = "u32" },
+                .{ .pad = 20 },
+                .{ .name = "attribs", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "make_context_current_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_tag", .type = "context_tag" },
+                .{ .pad = 20 },
+            },
+        },
+        .{
+            .name = "get_drawable_attributes_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_attribs", .type = "u32" },
+                .{ .pad = 20 },
+                .{ .name = "attribs", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "gen_lists_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ret_val", .type = "u32" },
+            },
+        },
+        .{
+            .name = "render_mode_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ret_val", .type = "u32" },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "new_mode", .type = "u32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "finish_reply",
+            .fields = .{
+                .{ .pad = 1 },
+            },
+        },
+        .{
+            .name = "read_pixels_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "get_booleanv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "bool" },
+                .{ .pad = 15 },
+                .{
+                    .name = "data",
+                    .type = "bool",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_clip_plane_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+                .{ .name = "data", .type = "float64", .list = true },
+            },
+        },
+        .{
+            .name = "get_doublev_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float64" },
+                .{ .pad = 8 },
+                .{
+                    .name = "data",
+                    .type = "float64",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_error_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "error", .type = "i32" },
+            },
+        },
+        .{
+            .name = "get_floatv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_integerv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_lightfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_lightiv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_mapdv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float64" },
+                .{ .pad = 8 },
+                .{
+                    .name = "data",
+                    .type = "float64",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_mapfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_mapiv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_materialfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_materialiv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_pixel_mapfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_pixel_mapuiv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "u32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_pixel_mapusv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "u16" },
+                .{ .pad = 16 },
+                .{
+                    .name = "data",
+                    .type = "u16",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_polygon_stipple_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "get_string_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "string",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_envfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_enviv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_gendv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float64" },
+                .{ .pad = 8 },
+                .{
+                    .name = "data",
+                    .type = "float64",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_genfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_geniv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_image_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 8 },
+                .{ .name = "width", .type = "i32" },
+                .{ .name = "height", .type = "i32" },
+                .{ .name = "depth", .type = "i32" },
+                .{ .pad = 4 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "get_tex_parameterfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_parameteriv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_level_parameterfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_tex_level_parameteriv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "is_enabled_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ret_val", .type = "bool32" },
+            },
+        },
+        .{
+            .name = "is_list_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ret_val", .type = "bool32" },
+            },
+        },
+        .{
+            .name = "are_textures_resident_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ret_val", .type = "bool32" },
+                .{ .pad = 20 },
+                .{ .name = "data", .type = "bool", .list = true },
+            },
+        },
+        .{
+            .name = "gen_textures_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+                .{
+                    .name = "data",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "length",
+                },
+            },
+        },
+        .{
+            .name = "is_texture_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ret_val", .type = "bool32" },
+            },
+        },
+        .{
+            .name = "get_color_table_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 8 },
+                .{ .name = "width", .type = "i32" },
+                .{ .pad = 12 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "get_color_table_parameterfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_color_table_parameteriv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_convolution_filter_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 8 },
+                .{ .name = "width", .type = "i32" },
+                .{ .name = "height", .type = "i32" },
+                .{ .pad = 8 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "get_convolution_parameterfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_convolution_parameteriv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_separable_filter_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 8 },
+                .{ .name = "row_w", .type = "i32" },
+                .{ .name = "col_h", .type = "i32" },
+                .{ .pad = 8 },
+                .{ .name = "rows_and_cols", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "get_histogram_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 8 },
+                .{ .name = "width", .type = "i32" },
+                .{ .pad = 12 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "get_histogram_parameterfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_histogram_parameteriv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_minmax_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "get_minmax_parameterfv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "float32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "float32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_minmax_parameteriv_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_compressed_tex_image_arb_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 8 },
+                .{ .name = "size", .type = "i32" },
+                .{ .pad = 12 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "gen_queries_arb_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+                .{
+                    .name = "data",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "length",
+                },
+            },
+        },
+        .{
+            .name = "is_query_arb_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ret_val", .type = "bool32" },
+            },
+        },
+        .{
+            .name = "get_queryiv_arb_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_query_objectiv_arb_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "i32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "i32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+        .{
+            .name = "get_query_objectuiv_arb_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 4 },
+                .{ .name = "n", .type = "u32" },
+                .{ .name = "datum", .type = "u32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "n",
+                },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "pbuffer_clobber",
+            .number = 0,
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "event_type", .type = "u16" },
+                .{ .name = "draw_type", .type = "u16" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "b_mask", .type = "u32" },
+                .{ .name = "aux_buffer", .type = "u16" },
+                .{ .name = "x", .type = "u16" },
+                .{ .name = "y", .type = "u16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "count", .type = "u16" },
+                .{ .pad = 4 },
+            },
+        },
+        .{
+            .name = "buffer_swap_complete",
+            .number = 1,
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "event_type", .type = "u16" },
+                .{ .pad = 2 },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "ust_hi", .type = "u32" },
+                .{ .name = "ust_lo", .type = "u32" },
+                .{ .name = "msc_hi", .type = "u32" },
+                .{ .name = "msc_lo", .type = "u32" },
+                .{ .name = "sbc", .type = "u32" },
+            },
+        },
+    },
+    .errors = .{
+        .{
+            .name = "generic",
+            .fields = .{
+                .{ .name = "bad_value", .type = "u32" },
+                .{ .name = "minor_opcode", .type = "u16" },
+                .{ .name = "major_opcode", .type = "u8" },
+                .{ .pad = 21 },
+            },
+        },
+    },
+}

@@ -1,0 +1,461 @@
+.{
+    .name = "xfixes",
+    .xids = .{
+        .{ .name = "region" },
+        .{ .name = "barrier" },
+    },
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "save_set_mode",
+            .fields = .{
+                .{ .name = "insert", .value = 0 },
+                .{ .name = "delete", .value = 1 },
+            },
+        },
+        .{
+            .name = "save_set_target",
+            .fields = .{
+                .{ .name = "nearest", .value = 0 },
+                .{ .name = "root", .value = 1 },
+            },
+        },
+        .{
+            .name = "save_set_mapping",
+            .fields = .{
+                .{ .name = "map", .value = 0 },
+                .{ .name = "unmap", .value = 1 },
+            },
+        },
+        .{
+            .name = "selection_event",
+            .fields = .{
+                .{ .name = "set_selection_owner", .value = 0 },
+                .{ .name = "selection_window_destroy", .value = 1 },
+                .{ .name = "selection_client_close", .value = 2 },
+            },
+        },
+        .{
+            .name = "cursor_notify",
+            .fields = .{
+                .{ .name = "display_cursor", .value = 0 },
+            },
+        },
+        .{
+            .name = "region",
+            .fields = .{
+                .{ .name = "none", .value = 0 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "selection_event_mask",
+            .fields = .{
+                .{ .name = "set_selection_owner", .value = 1 },
+                .{ .name = "selection_window_destroy", .value = 2 },
+                .{ .name = "selection_client_close", .value = 4 },
+            },
+        },
+        .{
+            .name = "cursor_notify_mask",
+            .fields = .{
+                .{ .name = "display_cursor", .value = 1 },
+            },
+        },
+        .{
+            .name = "barrier_directions",
+            .fields = .{
+                .{ .name = "positive_x", .value = 1 },
+                .{ .name = "positive_y", .value = 2 },
+                .{ .name = "negative_x", .value = 4 },
+                .{ .name = "negative_y", .value = 8 },
+            },
+        },
+    },
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "client_major_version", .type = "u32" },
+                .{ .name = "client_minor_version", .type = "u32" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "change_save_set",
+            .params = .{
+                .{ .name = "mode", .type = "u8", .@"enum" = "save_set_mode" },
+                .{ .name = "target", .type = "u8", .@"enum" = "save_set_target" },
+                .{ .name = "map", .type = "u8", .@"enum" = "save_set_mapping" },
+                .{ .pad = 1 },
+                .{ .name = "window", .type = "window" },
+            },
+        },
+        .{
+            .name = "select_selection_input",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "selection", .type = "atom" },
+                .{ .name = "event_mask", .type = "u32" },
+            },
+        },
+        .{
+            .name = "select_cursor_input",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "event_mask", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_cursor_image",
+            .params = .{},
+            .returns = "get_cursor_image_reply",
+        },
+        .{
+            .name = "create_region",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+                .{ .name = "rectangles", .type = "rectangle", .list = true },
+            },
+        },
+        .{
+            .name = "create_region_from_bitmap",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+                .{ .name = "bitmap", .type = "pixmap" },
+            },
+        },
+        .{
+            .name = "create_region_from_window",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "kind", .type = "kind", .@"enum" = "sk" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "create_region_from_gc",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+                .{ .name = "graphics_context", .type = "gcontext" },
+            },
+        },
+        .{
+            .name = "create_region_from_picture",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+                .{ .name = "picture", .type = "picture" },
+            },
+        },
+        .{
+            .name = "destroy_region",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+            },
+        },
+        .{
+            .name = "set_region",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+                .{ .name = "rectangles", .type = "rectangle", .list = true },
+            },
+        },
+        .{
+            .name = "copy_region",
+            .params = .{
+                .{ .name = "source", .type = "region" },
+                .{ .name = "destination", .type = "region" },
+            },
+        },
+        .{
+            .name = "union_region",
+            .params = .{
+                .{ .name = "source1", .type = "region" },
+                .{ .name = "source2", .type = "region" },
+                .{ .name = "destination", .type = "region" },
+            },
+        },
+        .{
+            .name = "intersect_region",
+            .params = .{
+                .{ .name = "source1", .type = "region" },
+                .{ .name = "source2", .type = "region" },
+                .{ .name = "destination", .type = "region" },
+            },
+        },
+        .{
+            .name = "subtract_region",
+            .params = .{
+                .{ .name = "source1", .type = "region" },
+                .{ .name = "source2", .type = "region" },
+                .{ .name = "destination", .type = "region" },
+            },
+        },
+        .{
+            .name = "invert_region",
+            .params = .{
+                .{ .name = "source", .type = "region" },
+                .{ .name = "bounds", .type = "rectangle" },
+                .{ .name = "destination", .type = "region" },
+            },
+        },
+        .{
+            .name = "translate_region",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+                .{ .name = "dx", .type = "i16" },
+                .{ .name = "dy", .type = "i16" },
+            },
+        },
+        .{
+            .name = "region_extents",
+            .params = .{
+                .{ .name = "source", .type = "region" },
+                .{ .name = "destination", .type = "region" },
+            },
+        },
+        .{
+            .name = "fetch_region",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+            },
+            .returns = "fetch_region_reply",
+        },
+        .{
+            .name = "set_gc_clip_region",
+            .params = .{
+                .{ .name = "graphics_context", .type = "gcontext" },
+                .{ .name = "region", .type = "region" },
+                .{ .name = "x_origin", .type = "i16" },
+                .{ .name = "y_origin", .type = "i16" },
+            },
+        },
+        .{
+            .name = "set_window_shape_region",
+            .params = .{
+                .{ .name = "dest", .type = "window" },
+                .{ .name = "dest_kind", .type = "kind", .@"enum" = "sk" },
+                .{ .pad = 3 },
+                .{ .name = "x_offset", .type = "i16" },
+                .{ .name = "y_offset", .type = "i16" },
+                .{ .name = "region", .type = "region" },
+            },
+        },
+        .{
+            .name = "set_picture_clip_region",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "region", .type = "region" },
+                .{ .name = "x_origin", .type = "i16" },
+                .{ .name = "y_origin", .type = "i16" },
+            },
+        },
+        .{
+            .name = "set_cursor_name",
+            .params = .{
+                .{ .name = "cursor", .type = "cursor" },
+                .{ .name = "nbytes", .type = "u16" },
+                .{ .pad = 2 },
+                .{
+                    .name = "name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "nbytes",
+                },
+            },
+        },
+        .{
+            .name = "get_cursor_name",
+            .params = .{
+                .{ .name = "cursor", .type = "cursor" },
+            },
+            .returns = "get_cursor_name_reply",
+        },
+        .{
+            .name = "get_cursor_image_and_name",
+            .params = .{},
+            .returns = "get_cursor_image_and_name_reply",
+        },
+        .{
+            .name = "change_cursor",
+            .params = .{
+                .{ .name = "source", .type = "cursor" },
+                .{ .name = "destination", .type = "cursor" },
+            },
+        },
+        .{
+            .name = "change_cursor_by_name",
+            .params = .{
+                .{ .name = "src", .type = "cursor" },
+                .{ .name = "nbytes", .type = "u16" },
+                .{ .pad = 2 },
+                .{
+                    .name = "name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "nbytes",
+                },
+            },
+        },
+        .{
+            .name = "expand_region",
+            .params = .{
+                .{ .name = "source", .type = "region" },
+                .{ .name = "destination", .type = "region" },
+                .{ .name = "left", .type = "u16" },
+                .{ .name = "right", .type = "u16" },
+                .{ .name = "top", .type = "u16" },
+                .{ .name = "bottom", .type = "u16" },
+            },
+        },
+        .{
+            .name = "hide_cursor",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+        },
+        .{
+            .name = "show_cursor",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+        },
+        .{
+            .name = "create_pointer_barrier",
+            .params = .{
+                .{ .name = "barrier", .type = "barrier" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "x1", .type = "u16" },
+                .{ .name = "y1", .type = "u16" },
+                .{ .name = "x2", .type = "u16" },
+                .{ .name = "y2", .type = "u16" },
+                .{ .name = "directions", .type = "u32" },
+                .{ .pad = 2 },
+                .{ .name = "num_devices", .type = "u16" },
+                .{
+                    .name = "devices",
+                    .type = "u16",
+                    .list = true,
+                    .fieldref = "num_devices",
+                },
+            },
+        },
+        .{
+            .name = "delete_pointer_barrier",
+            .params = .{
+                .{ .name = "barrier", .type = "barrier" },
+            },
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+                .{ .pad = 16 },
+            },
+        },
+        .{
+            .name = "get_cursor_image_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "x", .type = "i16" },
+                .{ .name = "y", .type = "i16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "xhot", .type = "u16" },
+                .{ .name = "yhot", .type = "u16" },
+                .{ .name = "cursor_serial", .type = "u32" },
+                .{ .pad = 8 },
+                .{ .name = "cursor_image", .type = "u32", .list = true },
+            },
+        },
+        .{
+            .name = "fetch_region_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "extents", .type = "rectangle" },
+                .{ .pad = 16 },
+                .{ .name = "rectangles", .type = "rectangle", .list = true },
+            },
+        },
+        .{
+            .name = "get_cursor_name_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "atom", .type = "atom" },
+                .{ .name = "nbytes", .type = "u16" },
+                .{ .pad = 18 },
+                .{
+                    .name = "name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "nbytes",
+                },
+            },
+        },
+        .{
+            .name = "get_cursor_image_and_name_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "x", .type = "i16" },
+                .{ .name = "y", .type = "i16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "xhot", .type = "u16" },
+                .{ .name = "yhot", .type = "u16" },
+                .{ .name = "cursor_serial", .type = "u32" },
+                .{ .name = "cursor_atom", .type = "atom" },
+                .{ .name = "nbytes", .type = "u16" },
+                .{ .pad = 2 },
+                .{ .name = "cursor_image", .type = "u32", .list = true },
+                .{
+                    .name = "name",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "nbytes",
+                },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "selection_notify",
+            .number = 0,
+            .fields = .{
+                .{ .name = "subtype", .type = "u8", .@"enum" = "selection_event" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "owner", .type = "window" },
+                .{ .name = "selection", .type = "atom" },
+                .{ .name = "timestamp", .type = "timestamp" },
+                .{ .name = "selection_timestamp", .type = "timestamp" },
+                .{ .pad = 8 },
+            },
+        },
+        .{
+            .name = "cursor_notify",
+            .number = 1,
+            .fields = .{
+                .{ .name = "subtype", .type = "u8", .@"enum" = "cursor_notify" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "cursor_serial", .type = "u32" },
+                .{ .name = "timestamp", .type = "timestamp" },
+                .{ .name = "name", .type = "atom" },
+                .{ .pad = 12 },
+            },
+        },
+    },
+    .errors = .{
+        .{
+            .name = "bad_region",
+            .fields = .{},
+        },
+    },
+}

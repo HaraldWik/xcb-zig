@@ -1,0 +1,33 @@
+.{
+    .name = "ge",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "client_major_version", .type = "u16" },
+                .{ .name = "client_minor_version", .type = "u16" },
+            },
+            .returns = "query_version_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u16" },
+                .{ .name = "minor_version", .type = "u16" },
+                .{ .pad = 20 },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

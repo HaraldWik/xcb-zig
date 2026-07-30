@@ -1,0 +1,66 @@
+.{
+    .name = "xc_misc",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "get_version",
+            .params = .{
+                .{ .name = "client_major_version", .type = "u16" },
+                .{ .name = "client_minor_version", .type = "u16" },
+            },
+            .returns = "get_version_reply",
+        },
+        .{
+            .name = "get_xid_range",
+            .params = .{},
+            .returns = "get_xid_range_reply",
+        },
+        .{
+            .name = "get_xid_list",
+            .params = .{
+                .{ .name = "count", .type = "u32" },
+            },
+            .returns = "get_xid_list_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "get_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "server_major_version", .type = "u16" },
+                .{ .name = "server_minor_version", .type = "u16" },
+            },
+        },
+        .{
+            .name = "get_xid_range_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "start_id", .type = "u32" },
+                .{ .name = "count", .type = "u32" },
+            },
+        },
+        .{
+            .name = "get_xid_list_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "ids_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "ids",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "ids_len",
+                },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

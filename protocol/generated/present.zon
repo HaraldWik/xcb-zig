@@ -1,0 +1,235 @@
+.{
+    .name = "present",
+    .xids = .{
+        .{ .name = "event" },
+    },
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "event",
+            .fields = .{
+                .{ .name = "configure_notify", .value = 0 },
+                .{ .name = "complete_notify", .value = 1 },
+                .{ .name = "idle_notify", .value = 2 },
+                .{ .name = "redirect_notify", .value = 3 },
+            },
+        },
+        .{
+            .name = "complete_kind",
+            .fields = .{
+                .{ .name = "pixmap", .value = 0 },
+                .{ .name = "notify_msc", .value = 1 },
+            },
+        },
+        .{
+            .name = "complete_mode",
+            .fields = .{
+                .{ .name = "copy", .value = 0 },
+                .{ .name = "flip", .value = 1 },
+                .{ .name = "skip", .value = 2 },
+                .{ .name = "suboptimal_copy", .value = 3 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "event_mask",
+            .fields = .{
+                .{ .name = "no_event", .value = 0 },
+                .{ .name = "configure_notify", .value = 1 },
+                .{ .name = "complete_notify", .value = 2 },
+                .{ .name = "idle_notify", .value = 4 },
+                .{ .name = "redirect_notify", .value = 8 },
+            },
+        },
+        .{
+            .name = "option",
+            .fields = .{
+                .{ .name = "none", .value = 0 },
+                .{ .name = "async", .value = 1 },
+                .{ .name = "copy", .value = 2 },
+                .{ .name = "ust", .value = 4 },
+                .{ .name = "suboptimal", .value = 8 },
+            },
+        },
+        .{
+            .name = "capability",
+            .fields = .{
+                .{ .name = "none", .value = 0 },
+                .{ .name = "async", .value = 1 },
+                .{ .name = "fence", .value = 2 },
+                .{ .name = "ust", .value = 4 },
+            },
+        },
+    },
+    .structs = .{
+        .{
+            .name = "notify",
+            .fields = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "serial", .type = "u32" },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "pixmap",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "pixmap", .type = "pixmap" },
+                .{ .name = "serial", .type = "u32" },
+                .{ .name = "valid", .type = "region" },
+                .{ .name = "update", .type = "region" },
+                .{ .name = "x_off", .type = "i16" },
+                .{ .name = "y_off", .type = "i16" },
+                .{ .name = "target_crtc", .type = "crtc" },
+                .{ .name = "wait_fence", .type = "fence" },
+                .{ .name = "idle_fence", .type = "fence" },
+                .{ .name = "options", .type = "u32" },
+                .{ .pad = 4 },
+                .{ .name = "target_msc", .type = "u64" },
+                .{ .name = "divisor", .type = "u64" },
+                .{ .name = "remainder", .type = "u64" },
+                .{ .name = "notifies", .type = "notify", .list = true },
+            },
+        },
+        .{
+            .name = "notify_msc",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "serial", .type = "u32" },
+                .{ .pad = 4 },
+                .{ .name = "target_msc", .type = "u64" },
+                .{ .name = "divisor", .type = "u64" },
+                .{ .name = "remainder", .type = "u64" },
+            },
+        },
+        .{
+            .name = "select_input",
+            .params = .{
+                .{ .name = "eid", .type = "event" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "event_mask", .type = "u32" },
+            },
+        },
+        .{
+            .name = "query_capabilities",
+            .params = .{
+                .{ .name = "target", .type = "u32" },
+            },
+            .returns = "query_capabilities_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+            },
+        },
+        .{
+            .name = "query_capabilities_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "capabilities", .type = "u32" },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "generic",
+            .number = 0,
+            .fields = .{
+                .{ .name = "extension", .type = "u8" },
+                .{ .name = "length", .type = "u32" },
+                .{ .name = "evtype", .type = "u16" },
+                .{ .pad = 2 },
+                .{ .name = "event", .type = "event" },
+            },
+        },
+        .{
+            .name = "configure_notify",
+            .number = 0,
+            .fields = .{
+                .{ .pad = 2 },
+                .{ .name = "event", .type = "event" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "x", .type = "i16" },
+                .{ .name = "y", .type = "i16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "off_x", .type = "i16" },
+                .{ .name = "off_y", .type = "i16" },
+                .{ .name = "pixmap_width", .type = "u16" },
+                .{ .name = "pixmap_height", .type = "u16" },
+                .{ .name = "pixmap_flags", .type = "u32" },
+            },
+        },
+        .{
+            .name = "complete_notify",
+            .number = 1,
+            .fields = .{
+                .{ .name = "kind", .type = "u8", .@"enum" = "complete_kind" },
+                .{ .name = "mode", .type = "u8", .@"enum" = "complete_mode" },
+                .{ .name = "event", .type = "event" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "serial", .type = "u32" },
+                .{ .name = "ust", .type = "u64" },
+                .{ .name = "msc", .type = "u64" },
+            },
+        },
+        .{
+            .name = "idle_notify",
+            .number = 2,
+            .fields = .{
+                .{ .pad = 2 },
+                .{ .name = "event", .type = "event" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "serial", .type = "u32" },
+                .{ .name = "pixmap", .type = "pixmap" },
+                .{ .name = "idle_fence", .type = "fence" },
+            },
+        },
+        .{
+            .name = "redirect_notify",
+            .number = 3,
+            .fields = .{
+                .{ .name = "update_window", .type = "bool" },
+                .{ .pad = 1 },
+                .{ .name = "event", .type = "event" },
+                .{ .name = "event_window", .type = "window" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "pixmap", .type = "pixmap" },
+                .{ .name = "serial", .type = "u32" },
+                .{ .name = "valid_region", .type = "region" },
+                .{ .name = "update_region", .type = "region" },
+                .{ .name = "valid_rect", .type = "rectangle" },
+                .{ .name = "update_rect", .type = "rectangle" },
+                .{ .name = "x_off", .type = "i16" },
+                .{ .name = "y_off", .type = "i16" },
+                .{ .name = "target_crtc", .type = "crtc" },
+                .{ .name = "wait_fence", .type = "fence" },
+                .{ .name = "idle_fence", .type = "fence" },
+                .{ .name = "options", .type = "u32" },
+                .{ .pad = 4 },
+                .{ .name = "target_msc", .type = "u64" },
+                .{ .name = "divisor", .type = "u64" },
+                .{ .name = "remainder", .type = "u64" },
+                .{ .name = "notifies", .type = "notify", .list = true },
+            },
+        },
+    },
+    .errors = .{},
+}

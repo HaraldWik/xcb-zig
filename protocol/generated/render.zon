@@ -1,0 +1,759 @@
+.{
+    .name = "render",
+    .xids = .{
+        .{ .name = "glyphset" },
+        .{ .name = "picture" },
+        .{ .name = "pictformat" },
+    },
+    .xidunions = .{},
+    .typedefs = .{
+        .{ .old = "u32", .new = "glyph" },
+        .{ .old = "i32", .new = "fixed" },
+    },
+    .enums = .{
+        .{
+            .name = "pict_type",
+            .fields = .{
+                .{ .name = "indexed", .value = 0 },
+                .{ .name = "direct", .value = 1 },
+            },
+        },
+        .{
+            .name = "picture",
+            .fields = .{
+                .{ .name = "none", .value = 0 },
+            },
+        },
+        .{
+            .name = "pict_op",
+            .fields = .{
+                .{ .name = "clear", .value = 0 },
+                .{ .name = "src", .value = 1 },
+                .{ .name = "dst", .value = 2 },
+                .{ .name = "over", .value = 3 },
+                .{ .name = "over_reverse", .value = 4 },
+                .{ .name = "in", .value = 5 },
+                .{ .name = "in_reverse", .value = 6 },
+                .{ .name = "out", .value = 7 },
+                .{ .name = "out_reverse", .value = 8 },
+                .{ .name = "atop", .value = 9 },
+                .{ .name = "atop_reverse", .value = 10 },
+                .{ .name = "xor", .value = 11 },
+                .{ .name = "add", .value = 12 },
+                .{ .name = "saturate", .value = 13 },
+                .{ .name = "disjoint_clear", .value = 16 },
+                .{ .name = "disjoint_src", .value = 17 },
+                .{ .name = "disjoint_dst", .value = 18 },
+                .{ .name = "disjoint_over", .value = 19 },
+                .{ .name = "disjoint_over_reverse", .value = 20 },
+                .{ .name = "disjoint_in", .value = 21 },
+                .{ .name = "disjoint_in_reverse", .value = 22 },
+                .{ .name = "disjoint_out", .value = 23 },
+                .{ .name = "disjoint_out_reverse", .value = 24 },
+                .{ .name = "disjoint_atop", .value = 25 },
+                .{ .name = "disjoint_atop_reverse", .value = 26 },
+                .{ .name = "disjoint_xor", .value = 27 },
+                .{ .name = "conjoint_clear", .value = 32 },
+                .{ .name = "conjoint_src", .value = 33 },
+                .{ .name = "conjoint_dst", .value = 34 },
+                .{ .name = "conjoint_over", .value = 35 },
+                .{ .name = "conjoint_over_reverse", .value = 36 },
+                .{ .name = "conjoint_in", .value = 37 },
+                .{ .name = "conjoint_in_reverse", .value = 38 },
+                .{ .name = "conjoint_out", .value = 39 },
+                .{ .name = "conjoint_out_reverse", .value = 40 },
+                .{ .name = "conjoint_atop", .value = 41 },
+                .{ .name = "conjoint_atop_reverse", .value = 42 },
+                .{ .name = "conjoint_xor", .value = 43 },
+                .{ .name = "multiply", .value = 48 },
+                .{ .name = "screen", .value = 49 },
+                .{ .name = "overlay", .value = 50 },
+                .{ .name = "darken", .value = 51 },
+                .{ .name = "lighten", .value = 52 },
+                .{ .name = "color_dodge", .value = 53 },
+                .{ .name = "color_burn", .value = 54 },
+                .{ .name = "hard_light", .value = 55 },
+                .{ .name = "soft_light", .value = 56 },
+                .{ .name = "difference", .value = 57 },
+                .{ .name = "exclusion", .value = 58 },
+                .{ .name = "hsl_hue", .value = 59 },
+                .{ .name = "hsl_saturation", .value = 60 },
+                .{ .name = "hsl_color", .value = 61 },
+                .{ .name = "hsl_luminosity", .value = 62 },
+            },
+        },
+        .{
+            .name = "poly_edge",
+            .fields = .{
+                .{ .name = "sharp", .value = 0 },
+                .{ .name = "smooth", .value = 1 },
+            },
+        },
+        .{
+            .name = "poly_mode",
+            .fields = .{
+                .{ .name = "precise", .value = 0 },
+                .{ .name = "imprecise", .value = 1 },
+            },
+        },
+        .{
+            .name = "sub_pixel",
+            .fields = .{
+                .{ .name = "unknown", .value = 0 },
+                .{ .name = "horizontal_rgb", .value = 1 },
+                .{ .name = "horizontal_bgr", .value = 2 },
+                .{ .name = "vertical_rgb", .value = 3 },
+                .{ .name = "vertical_bgr", .value = 4 },
+                .{ .name = "none", .value = 5 },
+            },
+        },
+        .{
+            .name = "repeat",
+            .fields = .{
+                .{ .name = "none", .value = 0 },
+                .{ .name = "normal", .value = 1 },
+                .{ .name = "pad", .value = 2 },
+                .{ .name = "reflect", .value = 3 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "cp",
+            .fields = .{
+                .{ .name = "repeat", .value = 1 },
+                .{ .name = "alpha_map", .value = 2 },
+                .{ .name = "alpha_x_origin", .value = 4 },
+                .{ .name = "alpha_y_origin", .value = 8 },
+                .{ .name = "clip_x_origin", .value = 16 },
+                .{ .name = "clip_y_origin", .value = 32 },
+                .{ .name = "clip_mask", .value = 64 },
+                .{ .name = "graphics_exposure", .value = 128 },
+                .{ .name = "subwindow_mode", .value = 256 },
+                .{ .name = "poly_edge", .value = 512 },
+                .{ .name = "poly_mode", .value = 1024 },
+                .{ .name = "dither", .value = 2048 },
+                .{ .name = "component_alpha", .value = 4096 },
+            },
+        },
+    },
+    .structs = .{
+        .{
+            .name = "directformat",
+            .fields = .{
+                .{ .name = "red_shift", .type = "u16" },
+                .{ .name = "red_mask", .type = "u16" },
+                .{ .name = "green_shift", .type = "u16" },
+                .{ .name = "green_mask", .type = "u16" },
+                .{ .name = "blue_shift", .type = "u16" },
+                .{ .name = "blue_mask", .type = "u16" },
+                .{ .name = "alpha_shift", .type = "u16" },
+                .{ .name = "alpha_mask", .type = "u16" },
+            },
+        },
+        .{
+            .name = "pictforminfo",
+            .fields = .{
+                .{ .name = "id", .type = "pictformat" },
+                .{ .name = "type", .type = "u8", .@"enum" = "pict_type" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .pad = 2 },
+                .{ .name = "direct", .type = "directformat" },
+                .{ .name = "colormap", .type = "colormap" },
+            },
+        },
+        .{
+            .name = "pictvisual",
+            .fields = .{
+                .{ .name = "visual", .type = "visualid" },
+                .{ .name = "format", .type = "pictformat" },
+            },
+        },
+        .{
+            .name = "pictdepth",
+            .fields = .{
+                .{ .name = "depth", .type = "u8" },
+                .{ .pad = 1 },
+                .{ .name = "num_visuals", .type = "u16" },
+                .{ .pad = 4 },
+                .{
+                    .name = "visuals",
+                    .type = "pictvisual",
+                    .list = true,
+                    .fieldref = "num_visuals",
+                },
+            },
+        },
+        .{
+            .name = "pictscreen",
+            .fields = .{
+                .{ .name = "num_depths", .type = "u32" },
+                .{ .name = "fallback", .type = "pictformat" },
+                .{
+                    .name = "depths",
+                    .type = "pictdepth",
+                    .list = true,
+                    .fieldref = "num_depths",
+                },
+            },
+        },
+        .{
+            .name = "indexvalue",
+            .fields = .{
+                .{ .name = "pixel", .type = "u32" },
+                .{ .name = "red", .type = "u16" },
+                .{ .name = "green", .type = "u16" },
+                .{ .name = "blue", .type = "u16" },
+                .{ .name = "alpha", .type = "u16" },
+            },
+        },
+        .{
+            .name = "color",
+            .fields = .{
+                .{ .name = "red", .type = "u16" },
+                .{ .name = "green", .type = "u16" },
+                .{ .name = "blue", .type = "u16" },
+                .{ .name = "alpha", .type = "u16" },
+            },
+        },
+        .{
+            .name = "pointfix",
+            .fields = .{
+                .{ .name = "x", .type = "fixed" },
+                .{ .name = "y", .type = "fixed" },
+            },
+        },
+        .{
+            .name = "linefix",
+            .fields = .{
+                .{ .name = "p1", .type = "pointfix" },
+                .{ .name = "p2", .type = "pointfix" },
+            },
+        },
+        .{
+            .name = "triangle",
+            .fields = .{
+                .{ .name = "p1", .type = "pointfix" },
+                .{ .name = "p2", .type = "pointfix" },
+                .{ .name = "p3", .type = "pointfix" },
+            },
+        },
+        .{
+            .name = "trapezoid",
+            .fields = .{
+                .{ .name = "top", .type = "fixed" },
+                .{ .name = "bottom", .type = "fixed" },
+                .{ .name = "left", .type = "linefix" },
+                .{ .name = "right", .type = "linefix" },
+            },
+        },
+        .{
+            .name = "glyphinfo",
+            .fields = .{
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "x", .type = "i16" },
+                .{ .name = "y", .type = "i16" },
+                .{ .name = "x_off", .type = "i16" },
+                .{ .name = "y_off", .type = "i16" },
+            },
+        },
+        .{
+            .name = "transform",
+            .fields = .{
+                .{ .name = "matrix11", .type = "fixed" },
+                .{ .name = "matrix12", .type = "fixed" },
+                .{ .name = "matrix13", .type = "fixed" },
+                .{ .name = "matrix21", .type = "fixed" },
+                .{ .name = "matrix22", .type = "fixed" },
+                .{ .name = "matrix23", .type = "fixed" },
+                .{ .name = "matrix31", .type = "fixed" },
+                .{ .name = "matrix32", .type = "fixed" },
+                .{ .name = "matrix33", .type = "fixed" },
+            },
+        },
+        .{
+            .name = "animcursorelt",
+            .fields = .{
+                .{ .name = "cursor", .type = "cursor" },
+                .{ .name = "delay", .type = "u32" },
+            },
+        },
+        .{
+            .name = "spanfix",
+            .fields = .{
+                .{ .name = "l", .type = "fixed" },
+                .{ .name = "r", .type = "fixed" },
+                .{ .name = "y", .type = "fixed" },
+            },
+        },
+        .{
+            .name = "trap",
+            .fields = .{
+                .{ .name = "top", .type = "spanfix" },
+                .{ .name = "bot", .type = "spanfix" },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "client_major_version", .type = "u32" },
+                .{ .name = "client_minor_version", .type = "u32" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "query_pict_formats",
+            .params = .{},
+            .returns = "query_pict_formats_reply",
+        },
+        .{
+            .name = "query_pict_index_values",
+            .params = .{
+                .{ .name = "format", .type = "pictformat" },
+            },
+            .returns = "query_pict_index_values_reply",
+        },
+        .{
+            .name = "create_picture",
+            .params = .{
+                .{ .name = "pid", .type = "picture" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "format", .type = "pictformat" },
+                .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
+            },
+        },
+        .{
+            .name = "change_picture",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "value_mask", .type = "u32" },
+                .{
+                    .name = "value_list",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "value_mask",
+                },
+            },
+        },
+        .{
+            .name = "set_picture_clip_rectangles",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "clip_x_origin", .type = "i16" },
+                .{ .name = "clip_y_origin", .type = "i16" },
+                .{ .name = "rectangles", .type = "rectangle", .list = true },
+            },
+        },
+        .{
+            .name = "free_picture",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+            },
+        },
+        .{
+            .name = "composite",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "src", .type = "picture" },
+                .{ .name = "mask", .type = "picture" },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "mask_x", .type = "i16" },
+                .{ .name = "mask_y", .type = "i16" },
+                .{ .name = "dst_x", .type = "i16" },
+                .{ .name = "dst_y", .type = "i16" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+            },
+        },
+        .{
+            .name = "trapezoids",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "src", .type = "picture" },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "mask_format", .type = "pictformat" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "traps", .type = "trapezoid", .list = true },
+            },
+        },
+        .{
+            .name = "triangles",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "src", .type = "picture" },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "mask_format", .type = "pictformat" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "triangles", .type = "triangle", .list = true },
+            },
+        },
+        .{
+            .name = "tri_strip",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "src", .type = "picture" },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "mask_format", .type = "pictformat" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "points", .type = "pointfix", .list = true },
+            },
+        },
+        .{
+            .name = "tri_fan",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "src", .type = "picture" },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "mask_format", .type = "pictformat" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "points", .type = "pointfix", .list = true },
+            },
+        },
+        .{
+            .name = "create_glyph_set",
+            .params = .{
+                .{ .name = "gsid", .type = "glyphset" },
+                .{ .name = "format", .type = "pictformat" },
+            },
+        },
+        .{
+            .name = "reference_glyph_set",
+            .params = .{
+                .{ .name = "gsid", .type = "glyphset" },
+                .{ .name = "existing", .type = "glyphset" },
+            },
+        },
+        .{
+            .name = "free_glyph_set",
+            .params = .{
+                .{ .name = "glyphset", .type = "glyphset" },
+            },
+        },
+        .{
+            .name = "add_glyphs",
+            .params = .{
+                .{ .name = "glyphset", .type = "glyphset" },
+                .{ .name = "glyphs_len", .type = "u32" },
+                .{
+                    .name = "glyphids",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "glyphs_len",
+                },
+                .{
+                    .name = "glyphs",
+                    .type = "glyphinfo",
+                    .list = true,
+                    .fieldref = "glyphs_len",
+                },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "free_glyphs",
+            .params = .{
+                .{ .name = "glyphset", .type = "glyphset" },
+                .{ .name = "glyphs", .type = "glyph", .list = true },
+            },
+        },
+        .{
+            .name = "composite_glyphs8",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "src", .type = "picture" },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "mask_format", .type = "pictformat" },
+                .{ .name = "glyphset", .type = "glyphset" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "glyphcmds", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "composite_glyphs16",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "src", .type = "picture" },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "mask_format", .type = "pictformat" },
+                .{ .name = "glyphset", .type = "glyphset" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "glyphcmds", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "composite_glyphs32",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "src", .type = "picture" },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "mask_format", .type = "pictformat" },
+                .{ .name = "glyphset", .type = "glyphset" },
+                .{ .name = "src_x", .type = "i16" },
+                .{ .name = "src_y", .type = "i16" },
+                .{ .name = "glyphcmds", .type = "u8", .list = true },
+            },
+        },
+        .{
+            .name = "fill_rectangles",
+            .params = .{
+                .{ .name = "op", .type = "u8", .@"enum" = "pict_op" },
+                .{ .pad = 3 },
+                .{ .name = "dst", .type = "picture" },
+                .{ .name = "color", .type = "color" },
+                .{ .name = "rects", .type = "rectangle", .list = true },
+            },
+        },
+        .{
+            .name = "create_cursor",
+            .params = .{
+                .{ .name = "colormap", .type = "cursor" },
+                .{ .name = "source", .type = "picture" },
+                .{ .name = "x", .type = "u16" },
+                .{ .name = "y", .type = "u16" },
+            },
+        },
+        .{
+            .name = "set_picture_transform",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "transform", .type = "transform" },
+            },
+        },
+        .{
+            .name = "query_filters",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+            },
+            .returns = "query_filters_reply",
+        },
+        .{
+            .name = "set_picture_filter",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "filter_len", .type = "u16" },
+                .{ .pad = 2 },
+                .{
+                    .name = "filter",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "filter_len",
+                },
+                .{ .alignment = 4 },
+                .{ .name = "values", .type = "fixed", .list = true },
+            },
+        },
+        .{
+            .name = "create_anim_cursor",
+            .params = .{
+                .{ .name = "colormap", .type = "cursor" },
+                .{ .name = "cursors", .type = "animcursorelt", .list = true },
+            },
+        },
+        .{
+            .name = "add_traps",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "x_off", .type = "i16" },
+                .{ .name = "y_off", .type = "i16" },
+                .{ .name = "traps", .type = "trap", .list = true },
+            },
+        },
+        .{
+            .name = "create_solid_fill",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "color", .type = "color" },
+            },
+        },
+        .{
+            .name = "create_linear_gradient",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "p1", .type = "pointfix" },
+                .{ .name = "p2", .type = "pointfix" },
+                .{ .name = "num_stops", .type = "u32" },
+                .{
+                    .name = "stops",
+                    .type = "fixed",
+                    .list = true,
+                    .fieldref = "num_stops",
+                },
+                .{
+                    .name = "colors",
+                    .type = "color",
+                    .list = true,
+                    .fieldref = "num_stops",
+                },
+            },
+        },
+        .{
+            .name = "create_radial_gradient",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "inner", .type = "pointfix" },
+                .{ .name = "outer", .type = "pointfix" },
+                .{ .name = "inner_radius", .type = "fixed" },
+                .{ .name = "outer_radius", .type = "fixed" },
+                .{ .name = "num_stops", .type = "u32" },
+                .{
+                    .name = "stops",
+                    .type = "fixed",
+                    .list = true,
+                    .fieldref = "num_stops",
+                },
+                .{
+                    .name = "colors",
+                    .type = "color",
+                    .list = true,
+                    .fieldref = "num_stops",
+                },
+            },
+        },
+        .{
+            .name = "create_conical_gradient",
+            .params = .{
+                .{ .name = "picture", .type = "picture" },
+                .{ .name = "center", .type = "pointfix" },
+                .{ .name = "angle", .type = "fixed" },
+                .{ .name = "num_stops", .type = "u32" },
+                .{
+                    .name = "stops",
+                    .type = "fixed",
+                    .list = true,
+                    .fieldref = "num_stops",
+                },
+                .{
+                    .name = "colors",
+                    .type = "color",
+                    .list = true,
+                    .fieldref = "num_stops",
+                },
+            },
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+                .{ .pad = 16 },
+            },
+        },
+        .{
+            .name = "query_pict_formats_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_formats", .type = "u32" },
+                .{ .name = "num_screens", .type = "u32" },
+                .{ .name = "num_depths", .type = "u32" },
+                .{ .name = "num_visuals", .type = "u32" },
+                .{ .name = "num_subpixel", .type = "u32" },
+                .{ .pad = 4 },
+                .{
+                    .name = "formats",
+                    .type = "pictforminfo",
+                    .list = true,
+                    .fieldref = "num_formats",
+                },
+                .{
+                    .name = "screens",
+                    .type = "pictscreen",
+                    .list = true,
+                    .fieldref = "num_screens",
+                },
+                .{
+                    .name = "subpixels",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "num_subpixel",
+                },
+            },
+        },
+        .{
+            .name = "query_pict_index_values_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_values", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "values",
+                    .type = "indexvalue",
+                    .list = true,
+                    .fieldref = "num_values",
+                },
+            },
+        },
+        .{
+            .name = "query_filters_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_aliases", .type = "u32" },
+                .{ .name = "num_filters", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "aliases",
+                    .type = "u16",
+                    .list = true,
+                    .fieldref = "num_aliases",
+                },
+                .{
+                    .name = "filters",
+                    .type = "str",
+                    .list = true,
+                    .fieldref = "num_filters",
+                },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{
+        .{
+            .name = "pict_format",
+            .fields = .{},
+        },
+        .{
+            .name = "picture",
+            .fields = .{},
+        },
+        .{
+            .name = "pict_op",
+            .fields = .{},
+        },
+        .{
+            .name = "glyph_set",
+            .fields = .{},
+        },
+        .{
+            .name = "glyph",
+            .fields = .{},
+        },
+    },
+}

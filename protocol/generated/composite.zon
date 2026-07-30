@@ -1,0 +1,108 @@
+.{
+    .name = "composite",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "redirect",
+            .fields = .{
+                .{ .name = "automatic", .value = 0 },
+                .{ .name = "manual", .value = 1 },
+            },
+        },
+    },
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "client_major_version", .type = "u32" },
+                .{ .name = "client_minor_version", .type = "u32" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "redirect_window",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "update", .type = "u8", .@"enum" = "redirect" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "redirect_subwindows",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "update", .type = "u8", .@"enum" = "redirect" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "unredirect_window",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "update", .type = "u8", .@"enum" = "redirect" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "unredirect_subwindows",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "update", .type = "u8", .@"enum" = "redirect" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "create_region_from_border_clip",
+            .params = .{
+                .{ .name = "region", .type = "region" },
+                .{ .name = "window", .type = "window" },
+            },
+        },
+        .{
+            .name = "name_window_pixmap",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "pixmap", .type = "pixmap" },
+            },
+        },
+        .{
+            .name = "get_overlay_window",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+            .returns = "get_overlay_window_reply",
+        },
+        .{
+            .name = "release_overlay_window",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+                .{ .pad = 16 },
+            },
+        },
+        .{
+            .name = "get_overlay_window_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "overlay_win", .type = "window" },
+                .{ .pad = 20 },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

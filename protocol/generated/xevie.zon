@@ -1,0 +1,106 @@
+.{
+    .name = "xevie",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "datatype",
+            .fields = .{
+                .{ .name = "unmodified", .value = 0 },
+                .{ .name = "modified", .value = 1 },
+            },
+        },
+    },
+    .bitmasks = .{},
+    .structs = .{
+        .{
+            .name = "event",
+            .fields = .{
+                .{ .pad = 32 },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "client_major_version", .type = "u16" },
+                .{ .name = "client_minor_version", .type = "u16" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "start",
+            .params = .{
+                .{ .name = "screen", .type = "u32" },
+            },
+            .returns = "start_reply",
+        },
+        .{
+            .name = "end",
+            .params = .{
+                .{ .name = "cmap", .type = "u32" },
+            },
+            .returns = "end_reply",
+        },
+        .{
+            .name = "send",
+            .params = .{
+                .{ .name = "event", .type = "event" },
+                .{ .name = "data_type", .type = "u32" },
+                .{ .pad = 64 },
+            },
+            .returns = "send_reply",
+        },
+        .{
+            .name = "select_input",
+            .params = .{
+                .{ .name = "event_mask", .type = "u32" },
+            },
+            .returns = "select_input_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "server_major_version", .type = "u16" },
+                .{ .name = "server_minor_version", .type = "u16" },
+                .{ .pad = 20 },
+            },
+        },
+        .{
+            .name = "start_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+            },
+        },
+        .{
+            .name = "end_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+            },
+        },
+        .{
+            .name = "send_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+            },
+        },
+        .{
+            .name = "select_input_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .pad = 24 },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

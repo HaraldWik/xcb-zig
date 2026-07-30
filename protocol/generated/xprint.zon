@@ -1,0 +1,457 @@
+.{
+    .name = "xprint",
+    .xids = .{
+        .{ .name = "pcontext" },
+    },
+    .xidunions = .{},
+    .typedefs = .{
+        .{ .old = "u8", .new = "string8" },
+    },
+    .enums = .{
+        .{
+            .name = "get_doc",
+            .fields = .{
+                .{ .name = "finished", .value = 0 },
+                .{ .name = "second_consumer", .value = 1 },
+            },
+        },
+        .{
+            .name = "detail",
+            .fields = .{
+                .{ .name = "start_job_notify", .value = 1 },
+                .{ .name = "end_job_notify", .value = 2 },
+                .{ .name = "start_doc_notify", .value = 3 },
+                .{ .name = "end_doc_notify", .value = 4 },
+                .{ .name = "start_page_notify", .value = 5 },
+                .{ .name = "end_page_notify", .value = 6 },
+            },
+        },
+        .{
+            .name = "attr",
+            .fields = .{
+                .{ .name = "job_attr", .value = 1 },
+                .{ .name = "doc_attr", .value = 2 },
+                .{ .name = "page_attr", .value = 3 },
+                .{ .name = "printer_attr", .value = 4 },
+                .{ .name = "server_attr", .value = 5 },
+                .{ .name = "medium_attr", .value = 6 },
+                .{ .name = "spooler_attr", .value = 7 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "ev_mask",
+            .fields = .{
+                .{ .name = "no_event_mask", .value = 0 },
+                .{ .name = "print_mask", .value = 1 },
+                .{ .name = "attribute_mask", .value = 2 },
+            },
+        },
+    },
+    .structs = .{
+        .{
+            .name = "printer",
+            .fields = .{
+                .{ .name = "name_len", .type = "u32" },
+                .{
+                    .name = "name",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "name_len",
+                },
+                .{ .alignment = 4 },
+                .{ .name = "desc_len", .type = "u32" },
+                .{
+                    .name = "description",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "desc_len",
+                },
+                .{ .alignment = 4 },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "print_query_version",
+            .params = .{},
+            .returns = "print_query_version_reply",
+        },
+        .{
+            .name = "print_get_printer_list",
+            .params = .{
+                .{ .name = "printer_name_len", .type = "u32" },
+                .{ .name = "locale_len", .type = "u32" },
+                .{
+                    .name = "printer_name",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "printer_name_len",
+                },
+                .{
+                    .name = "locale",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "locale_len",
+                },
+            },
+            .returns = "print_get_printer_list_reply",
+        },
+        .{
+            .name = "print_rehash_printer_list",
+            .params = .{},
+        },
+        .{
+            .name = "create_context",
+            .params = .{
+                .{ .name = "context_id", .type = "u32" },
+                .{ .name = "printer_name_len", .type = "u32" },
+                .{ .name = "locale_len", .type = "u32" },
+                .{
+                    .name = "printer_name",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "printer_name_len",
+                },
+                .{
+                    .name = "locale",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "locale_len",
+                },
+            },
+        },
+        .{
+            .name = "print_set_context",
+            .params = .{
+                .{ .name = "context", .type = "u32" },
+            },
+        },
+        .{
+            .name = "print_get_context",
+            .params = .{},
+            .returns = "print_get_context_reply",
+        },
+        .{
+            .name = "print_destroy_context",
+            .params = .{
+                .{ .name = "context", .type = "u32" },
+            },
+        },
+        .{
+            .name = "print_get_screen_of_context",
+            .params = .{},
+            .returns = "print_get_screen_of_context_reply",
+        },
+        .{
+            .name = "print_start_job",
+            .params = .{
+                .{ .name = "output_mode", .type = "u8" },
+            },
+        },
+        .{
+            .name = "print_end_job",
+            .params = .{
+                .{ .name = "cancel", .type = "bool" },
+            },
+        },
+        .{
+            .name = "print_start_doc",
+            .params = .{
+                .{ .name = "driver_mode", .type = "u8" },
+            },
+        },
+        .{
+            .name = "print_end_doc",
+            .params = .{
+                .{ .name = "cancel", .type = "bool" },
+            },
+        },
+        .{
+            .name = "print_put_document_data",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "len_data", .type = "u32" },
+                .{ .name = "len_fmt", .type = "u16" },
+                .{ .name = "len_options", .type = "u16" },
+                .{
+                    .name = "data",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "len_data",
+                },
+                .{
+                    .name = "doc_format",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "len_fmt",
+                },
+                .{
+                    .name = "options",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "len_options",
+                },
+            },
+        },
+        .{
+            .name = "print_get_document_data",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+                .{ .name = "max_bytes", .type = "u32" },
+            },
+            .returns = "print_get_document_data_reply",
+        },
+        .{
+            .name = "print_start_page",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+        },
+        .{
+            .name = "print_end_page",
+            .params = .{
+                .{ .name = "cancel", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "print_select_input",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+                .{ .name = "event_mask", .type = "u32" },
+            },
+        },
+        .{
+            .name = "print_input_selected",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+            },
+            .returns = "print_input_selected_reply",
+        },
+        .{
+            .name = "print_get_attributes",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+                .{ .name = "pool", .type = "u8" },
+                .{ .pad = 3 },
+            },
+            .returns = "print_get_attributes_reply",
+        },
+        .{
+            .name = "print_get_one_attributes",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+                .{ .name = "name_len", .type = "u32" },
+                .{ .name = "pool", .type = "u8" },
+                .{ .pad = 3 },
+                .{
+                    .name = "name",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "name_len",
+                },
+            },
+            .returns = "print_get_one_attributes_reply",
+        },
+        .{
+            .name = "print_set_attributes",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+                .{ .name = "string_len", .type = "u32" },
+                .{ .name = "pool", .type = "u8" },
+                .{ .name = "rule", .type = "u8" },
+                .{ .pad = 2 },
+                .{ .name = "attributes", .type = "string8", .list = true },
+            },
+        },
+        .{
+            .name = "print_get_page_dimensions",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+            },
+            .returns = "print_get_page_dimensions_reply",
+        },
+        .{
+            .name = "print_query_screens",
+            .params = .{},
+            .returns = "print_query_screens_reply",
+        },
+        .{
+            .name = "print_set_image_resolution",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+                .{ .name = "image_resolution", .type = "u16" },
+            },
+            .returns = "print_set_image_resolution_reply",
+        },
+        .{
+            .name = "print_get_image_resolution",
+            .params = .{
+                .{ .name = "context", .type = "pcontext" },
+            },
+            .returns = "print_get_image_resolution_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "print_query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u16" },
+                .{ .name = "minor_version", .type = "u16" },
+            },
+        },
+        .{
+            .name = "print_get_printer_list_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "list_count", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "printers",
+                    .type = "printer",
+                    .list = true,
+                    .fieldref = "list_count",
+                },
+            },
+        },
+        .{
+            .name = "print_get_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context", .type = "u32" },
+            },
+        },
+        .{
+            .name = "print_get_screen_of_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "root", .type = "window" },
+            },
+        },
+        .{
+            .name = "print_get_document_data_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "status_code", .type = "u32" },
+                .{ .name = "finished_flag", .type = "u32" },
+                .{ .name = "data_len", .type = "u32" },
+                .{ .pad = 12 },
+                .{
+                    .name = "data",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "data_len",
+                },
+            },
+        },
+        .{
+            .name = "print_input_selected_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "event_mask", .type = "u32" },
+                .{ .name = "all_events_mask", .type = "u32" },
+            },
+        },
+        .{
+            .name = "print_get_attributes_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "string_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "attributes",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "string_len",
+                },
+            },
+        },
+        .{
+            .name = "print_get_one_attributes_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "value_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "value",
+                    .type = "string8",
+                    .list = true,
+                    .fieldref = "value_len",
+                },
+            },
+        },
+        .{
+            .name = "print_get_page_dimensions_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "offset_x", .type = "u16" },
+                .{ .name = "offset_y", .type = "u16" },
+                .{ .name = "reproducible_width", .type = "u16" },
+                .{ .name = "reproducible_height", .type = "u16" },
+            },
+        },
+        .{
+            .name = "print_query_screens_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "list_count", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "roots",
+                    .type = "window",
+                    .list = true,
+                    .fieldref = "list_count",
+                },
+            },
+        },
+        .{
+            .name = "print_set_image_resolution_reply",
+            .fields = .{
+                .{ .name = "status", .type = "bool" },
+                .{ .name = "previous_resolutions", .type = "u16" },
+            },
+        },
+        .{
+            .name = "print_get_image_resolution_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "image_resolution", .type = "u16" },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "notify",
+            .number = 0,
+            .fields = .{
+                .{ .name = "detail", .type = "u8" },
+                .{ .name = "context", .type = "pcontext" },
+                .{ .name = "cancel", .type = "bool" },
+            },
+        },
+        .{
+            .name = "attribut_notify",
+            .number = 1,
+            .fields = .{
+                .{ .name = "detail", .type = "u8" },
+                .{ .name = "context", .type = "pcontext" },
+            },
+        },
+    },
+    .errors = .{
+        .{
+            .name = "bad_context",
+            .fields = .{},
+        },
+        .{
+            .name = "bad_sequence",
+            .fields = .{},
+        },
+    },
+}

@@ -1,0 +1,183 @@
+.{
+    .name = "shape",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{
+        .{ .old = "u8", .new = "op" },
+        .{ .old = "u8", .new = "kind" },
+    },
+    .enums = .{
+        .{
+            .name = "so",
+            .fields = .{
+                .{ .name = "set", .value = 0 },
+                .{ .name = "union", .value = 1 },
+                .{ .name = "intersect", .value = 2 },
+                .{ .name = "subtract", .value = 3 },
+                .{ .name = "invert", .value = 4 },
+            },
+        },
+        .{
+            .name = "sk",
+            .fields = .{
+                .{ .name = "bounding", .value = 0 },
+                .{ .name = "clip", .value = 1 },
+                .{ .name = "input", .value = 2 },
+            },
+        },
+    },
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{},
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "rectangles",
+            .params = .{
+                .{ .name = "operation", .type = "op", .@"enum" = "so" },
+                .{ .name = "destination_kind", .type = "kind", .@"enum" = "sk" },
+                .{ .name = "ordering", .type = "u8", .@"enum" = "clip_ordering" },
+                .{ .pad = 1 },
+                .{ .name = "destination_window", .type = "window" },
+                .{ .name = "x_offset", .type = "i16" },
+                .{ .name = "y_offset", .type = "i16" },
+                .{ .name = "rectangles", .type = "rectangle", .list = true },
+            },
+        },
+        .{
+            .name = "mask",
+            .params = .{
+                .{ .name = "operation", .type = "op", .@"enum" = "so" },
+                .{ .name = "destination_kind", .type = "kind", .@"enum" = "sk" },
+                .{ .pad = 2 },
+                .{ .name = "destination_window", .type = "window" },
+                .{ .name = "x_offset", .type = "i16" },
+                .{ .name = "y_offset", .type = "i16" },
+                .{ .name = "source_bitmap", .type = "pixmap" },
+            },
+        },
+        .{
+            .name = "combine",
+            .params = .{
+                .{ .name = "operation", .type = "op", .@"enum" = "so" },
+                .{ .name = "destination_kind", .type = "kind", .@"enum" = "sk" },
+                .{ .name = "source_kind", .type = "kind", .@"enum" = "sk" },
+                .{ .pad = 1 },
+                .{ .name = "destination_window", .type = "window" },
+                .{ .name = "x_offset", .type = "i16" },
+                .{ .name = "y_offset", .type = "i16" },
+                .{ .name = "source_window", .type = "window" },
+            },
+        },
+        .{
+            .name = "offset",
+            .params = .{
+                .{ .name = "destination_kind", .type = "kind", .@"enum" = "sk" },
+                .{ .pad = 3 },
+                .{ .name = "destination_window", .type = "window" },
+                .{ .name = "x_offset", .type = "i16" },
+                .{ .name = "y_offset", .type = "i16" },
+            },
+        },
+        .{
+            .name = "query_extents",
+            .params = .{
+                .{ .name = "destination_window", .type = "window" },
+            },
+            .returns = "query_extents_reply",
+        },
+        .{
+            .name = "select_input",
+            .params = .{
+                .{ .name = "destination_window", .type = "window" },
+                .{ .name = "enable", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "input_selected",
+            .params = .{
+                .{ .name = "destination_window", .type = "window" },
+            },
+            .returns = "input_selected_reply",
+        },
+        .{
+            .name = "get_rectangles",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "source_kind", .type = "kind", .@"enum" = "sk" },
+                .{ .pad = 3 },
+            },
+            .returns = "get_rectangles_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u16" },
+                .{ .name = "minor_version", .type = "u16" },
+            },
+        },
+        .{
+            .name = "query_extents_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "bounding_shaped", .type = "bool" },
+                .{ .name = "clip_shaped", .type = "bool" },
+                .{ .pad = 2 },
+                .{ .name = "bounding_shape_extents_x", .type = "i16" },
+                .{ .name = "bounding_shape_extents_y", .type = "i16" },
+                .{ .name = "bounding_shape_extents_width", .type = "u16" },
+                .{ .name = "bounding_shape_extents_height", .type = "u16" },
+                .{ .name = "clip_shape_extents_x", .type = "i16" },
+                .{ .name = "clip_shape_extents_y", .type = "i16" },
+                .{ .name = "clip_shape_extents_width", .type = "u16" },
+                .{ .name = "clip_shape_extents_height", .type = "u16" },
+            },
+        },
+        .{
+            .name = "input_selected_reply",
+            .fields = .{
+                .{ .name = "enabled", .type = "bool" },
+            },
+        },
+        .{
+            .name = "get_rectangles_reply",
+            .fields = .{
+                .{ .name = "ordering", .type = "u8", .@"enum" = "clip_ordering" },
+                .{ .name = "rectangles_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "rectangles",
+                    .type = "rectangle",
+                    .list = true,
+                    .fieldref = "rectangles_len",
+                },
+            },
+        },
+    },
+    .events = .{
+        .{
+            .name = "notify",
+            .number = 0,
+            .fields = .{
+                .{ .name = "shape_kind", .type = "kind", .@"enum" = "sk" },
+                .{ .name = "affected_window", .type = "window" },
+                .{ .name = "extents_x", .type = "i16" },
+                .{ .name = "extents_y", .type = "i16" },
+                .{ .name = "extents_width", .type = "u16" },
+                .{ .name = "extents_height", .type = "u16" },
+                .{ .name = "server_time", .type = "timestamp" },
+                .{ .name = "shaped", .type = "bool" },
+                .{ .pad = 11 },
+            },
+        },
+    },
+    .errors = .{},
+}

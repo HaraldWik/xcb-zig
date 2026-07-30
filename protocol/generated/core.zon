@@ -1,4 +1,5 @@
 .{
+    .name = "core",
     .xids = .{
         .{ .name = "window" },
         .{ .name = "pixmap" },
@@ -12,15 +13,15 @@
         .{
             .name = "drawable",
             .types = .{
-                "WINDOW",
-                "PIXMAP",
+                "window",
+                "pixmap",
             },
         },
         .{
             .name = "fontable",
             .types = .{
-                "FONT",
-                "GCONTEXT",
+                "font",
+                "gcontext",
             },
         },
     },
@@ -308,7 +309,7 @@
             .name = "grab_mode",
             .fields = .{
                 .{ .name = "sync", .value = 0 },
-                .{ .name = "@\"async\"", .value = 1 },
+                .{ .name = "async", .value = 1 },
             },
         },
         .{
@@ -377,13 +378,13 @@
             .name = "gx",
             .fields = .{
                 .{ .name = "clear", .value = 0 },
-                .{ .name = "@\"and\"", .value = 1 },
+                .{ .name = "and", .value = 1 },
                 .{ .name = "and_reverse", .value = 2 },
                 .{ .name = "copy", .value = 3 },
                 .{ .name = "and_inverted", .value = 4 },
                 .{ .name = "noop", .value = 5 },
                 .{ .name = "xor", .value = 6 },
-                .{ .name = "@\"or\"", .value = 7 },
+                .{ .name = "or", .value = 7 },
                 .{ .name = "nor", .value = 8 },
                 .{ .name = "equiv", .value = 9 },
                 .{ .name = "invert", .value = 10 },
@@ -2278,7 +2279,7 @@
                 .{ .name = "width", .type = "u16" },
                 .{ .name = "height", .type = "u16" },
                 .{ .name = "border_width", .type = "u16" },
-                .{ .pad = 10 },
+                .{ .pad = 2 },
             },
         },
         .{
@@ -2302,7 +2303,6 @@
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "atom", .type = "atom" },
-                .{ .pad = 20 },
             },
         },
         .{
@@ -2317,7 +2317,6 @@
                     .list = true,
                     .fieldref = "name_len",
                 },
-                .{ .alignment = 4 },
             },
         },
         .{
@@ -2329,7 +2328,6 @@
                 .{ .name = "value_len", .type = "u32" },
                 .{ .pad = 12 },
                 .{ .name = "value", .type = "void", .list = true },
-                .{ .alignment = 4 },
             },
         },
         .{
@@ -2351,21 +2349,18 @@
             .fields = .{
                 .{ .pad = 1 },
                 .{ .name = "owner", .type = "window" },
-                .{ .pad = 20 },
             },
         },
         .{
             .name = "grab_pointer_reply",
             .fields = .{
                 .{ .name = "status", .type = "u8", .@"enum" = "grab_status" },
-                .{ .pad = 24 },
             },
         },
         .{
             .name = "grab_keyboard_reply",
             .fields = .{
                 .{ .name = "status", .type = "u8", .@"enum" = "grab_status" },
-                .{ .pad = 24 },
             },
         },
         .{
@@ -2379,7 +2374,7 @@
                 .{ .name = "win_x", .type = "i16" },
                 .{ .name = "win_y", .type = "i16" },
                 .{ .name = "mask", .type = "u16" },
-                .{ .pad = 6 },
+                .{ .pad = 2 },
             },
         },
         .{
@@ -2403,7 +2398,6 @@
                 .{ .name = "child", .type = "window" },
                 .{ .name = "dst_x", .type = "i16" },
                 .{ .name = "dst_y", .type = "i16" },
-                .{ .pad = 16 },
             },
         },
         .{
@@ -2411,7 +2405,6 @@
             .fields = .{
                 .{ .name = "revert_to", .type = "u8", .@"enum" = "input_focus" },
                 .{ .name = "focus", .type = "window" },
-                .{ .pad = 20 },
             },
         },
         .{
@@ -2465,7 +2458,6 @@
                 .{ .name = "overall_width", .type = "i32" },
                 .{ .name = "overall_left", .type = "i32" },
                 .{ .name = "overall_right", .type = "i32" },
-                .{ .pad = 4 },
             },
         },
         .{
@@ -2480,7 +2472,6 @@
                     .list = true,
                     .fieldref = "names_len",
                 },
-                .{ .alignment = 4 },
             },
         },
         .{
@@ -2528,7 +2519,6 @@
                     .list = true,
                     .fieldref = "path_len",
                 },
-                .{ .alignment = 4 },
             },
         },
         .{
@@ -2538,7 +2528,6 @@
                 .{ .name = "visual", .type = "visualid" },
                 .{ .pad = 20 },
                 .{ .name = "data", .type = "u8", .list = true },
-                .{ .alignment = 4 },
             },
         },
         .{
@@ -2564,7 +2553,6 @@
                 .{ .name = "blue", .type = "u16" },
                 .{ .pad = 2 },
                 .{ .name = "pixel", .type = "u32" },
-                .{ .pad = 12 },
             },
         },
         .{
@@ -2578,7 +2566,6 @@
                 .{ .name = "visual_red", .type = "u16" },
                 .{ .name = "visual_green", .type = "u16" },
                 .{ .name = "visual_blue", .type = "u16" },
-                .{ .pad = 8 },
             },
         },
         .{
@@ -2644,7 +2631,6 @@
                 .{ .name = "visual_red", .type = "u16" },
                 .{ .name = "visual_green", .type = "u16" },
                 .{ .name = "visual_blue", .type = "u16" },
-                .{ .pad = 12 },
             },
         },
         .{
@@ -2653,7 +2639,6 @@
                 .{ .pad = 1 },
                 .{ .name = "width", .type = "u16" },
                 .{ .name = "height", .type = "u16" },
-                .{ .pad = 20 },
             },
         },
         .{
@@ -2664,7 +2649,6 @@
                 .{ .name = "major_opcode", .type = "u8" },
                 .{ .name = "first_event", .type = "u8" },
                 .{ .name = "first_error", .type = "u8" },
-                .{ .pad = 20 },
             },
         },
         .{
@@ -2678,7 +2662,6 @@
                     .list = true,
                     .fieldref = "names_len",
                 },
-                .{ .alignment = 4 },
             },
         },
         .{
@@ -2746,7 +2729,6 @@
             .name = "set_pointer_mapping_reply",
             .fields = .{
                 .{ .name = "status", .type = "u8", .@"enum" = "mapping_status" },
-                .{ .pad = 24 },
             },
         },
         .{
@@ -2766,7 +2748,6 @@
             .name = "set_modifier_mapping_reply",
             .fields = .{
                 .{ .name = "status", .type = "u8", .@"enum" = "mapping_status" },
-                .{ .pad = 24 },
             },
         },
         .{
@@ -3226,7 +3207,7 @@
                 .{ .name = "bad_value", .type = "u32" },
                 .{ .name = "minor_opcode", .type = "u16" },
                 .{ .name = "major_opcode", .type = "u8" },
-                .{ .pad = 21 },
+                .{ .pad = 1 },
             },
         },
         .{
@@ -3235,7 +3216,7 @@
                 .{ .name = "bad_value", .type = "u32" },
                 .{ .name = "minor_opcode", .type = "u16" },
                 .{ .name = "major_opcode", .type = "u8" },
-                .{ .pad = 21 },
+                .{ .pad = 1 },
             },
         },
     },

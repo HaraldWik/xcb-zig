@@ -1,0 +1,76 @@
+.{
+    .name = "xtest",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{
+        .{
+            .name = "cursor",
+            .fields = .{
+                .{ .name = "none", .value = 0 },
+                .{ .name = "current", .value = 1 },
+            },
+        },
+    },
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "get_version",
+            .params = .{
+                .{ .name = "major_version", .type = "u8" },
+                .{ .pad = 1 },
+                .{ .name = "minor_version", .type = "u16" },
+            },
+            .returns = "get_version_reply",
+        },
+        .{
+            .name = "compare_cursor",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "cursor", .type = "cursor" },
+            },
+            .returns = "compare_cursor_reply",
+        },
+        .{
+            .name = "fake_input",
+            .params = .{
+                .{ .name = "type", .type = "u8" },
+                .{ .name = "detail", .type = "u8" },
+                .{ .pad = 2 },
+                .{ .name = "time", .type = "u32" },
+                .{ .name = "root", .type = "window" },
+                .{ .pad = 8 },
+                .{ .name = "root_x", .type = "i16" },
+                .{ .name = "root_y", .type = "i16" },
+                .{ .pad = 7 },
+                .{ .name = "deviceid", .type = "u8" },
+            },
+        },
+        .{
+            .name = "grab_control",
+            .params = .{
+                .{ .name = "impervious", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+    },
+    .replies = .{
+        .{
+            .name = "get_version_reply",
+            .fields = .{
+                .{ .name = "major_version", .type = "u8" },
+                .{ .name = "minor_version", .type = "u16" },
+            },
+        },
+        .{
+            .name = "compare_cursor_reply",
+            .fields = .{
+                .{ .name = "same", .type = "bool" },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

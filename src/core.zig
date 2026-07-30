@@ -1,3 +1,5 @@
+const xcb_zig = @This();
+
 const builtin = @import("builtin");
 
 const std = @import("std");
@@ -15,148 +17,7 @@ pub const Xid = packed struct(u32) {
     };
 };
 
-const Char = u8;
-
-const Byte = u8;
-
-const Card8 = u8;
-const Card16 = u16;
-const Card32 = u32;
-const Card64 = u64;
-
-const Int8 = i8;
-const Int16 = i16;
-const Int32 = i32;
-const Int64 = i64;
-
-pub const Connection = extern struct {
-    has_error: c_int,
-
-    // constant data
-    setup: *const Setup,
-    fd: c_int,
-
-    // I/O data
-    iolock: std.c.pthread_mutex_t,
-    in: In,
-    out: Out,
-
-    // misc data
-    ext: Ext,
-    xid: IntXid,
-
-    pub fn generateId(self: *Connection) Xid.GenerateIdError!Xid {
-        switch (std.c.pthread_mutex_lock(&self.xid.lock)) {
-            .SUCCESS => {},
-            .DEADLK => return error.Deadlock,
-            .INVAL => return error.InvalidMutex,
-            else => return error.Pthread,
-        }
-
-        const id = self.xid.base | self.xid.last;
-        self.xid.last += self.xid.inc;
-
-        switch (std.c.pthread_mutex_unlock(&self.xid.lock)) {
-            .SUCCESS => {},
-            .PERM => return error.NotOwner,
-            .INVAL => return error.InvalidMutex,
-            else => return error.Pthread,
-        }
-
-        return .{ .id = id };
-    }
-
-    const Fd = extern struct {
-        fd: [16]c_int,
-        nfd: c_int,
-        ifd: c_int,
-
-        const have_sendmsg = switch (builtin.os.tag) {
-            .linux,
-            .freebsd,
-            .openbsd,
-            .netbsd,
-            .dragonfly,
-            .macos,
-            .ios,
-            .tvos,
-            .watchos,
-            .visionos,
-            => true,
-
-            else => false,
-        };
-    };
-
-    pub const In = extern struct {
-        event_cond: std.c.pthread_cond_t,
-
-        reading: c_int,
-
-        queue: [4096]u8,
-        queue_len: c_int,
-
-        request_expected: u64,
-        request_read: u64,
-        request_completed: u64,
-        total_read: u64,
-        current_reply: ?*anyopaque,
-        current_reply_tail: ?*?*anyopaque,
-
-        replies: ?*anyopaque,
-        events: ?*anyopaque,
-        events_tail: ?*?*anyopaque,
-        readers: ?*anyopaque,
-        special_waiters: ?*anyopaque,
-
-        pending_replies: ?*anyopaque,
-        pending_replies_tail: ?*?*anyopaque,
-
-        in_fd: if (Fd.have_sendmsg) Fd else void,
-
-        special_events: ?*anyopaque,
-    };
-
-    pub const Out = extern struct {
-        cond: std.c.pthread_cond_t,
-        writing: c_int,
-
-        socket_cond: std.c.pthread_cond_t,
-        return_socket: *const fn (closure: ?*anyopaque) callconv(.c) void,
-        socket_closure: ?*anyopaque,
-        socket_moving: c_int,
-
-        queue: [16384]u8,
-        queue_len: c_int,
-
-        request: u64,
-        request_written: u64,
-        request_expected_written: u64,
-        total_written: u64,
-
-        reqlenlock: std.c.pthread_mutex_t,
-        maximum_request_length_tag: c_int,
-        maximum_request_length: extern union {
-            cookie: Cookie(*anyopaque),
-            value: u32,
-        },
-        out_fd: if (Fd.have_sendmsg) Fd else void,
-    };
-
-    pub const Ext = extern struct {
-        lock: std.c.pthread_mutex_t,
-        extensions: ?*anyopaque,
-        extensions_size: c_int,
-    };
-
-    pub const IntXid = extern struct {
-        lock: std.c.pthread_mutex_t,
-        last: u32,
-        base: u32,
-        max: u32,
-        inc: u32,
-    };
-};
+pub const Connection = *opaque {};
 
 pub fn Cookie(T: type) type {
     _ = T;
@@ -184,24 +45,141 @@ pub const GenericError = extern struct {
     full_sequence: u32,
 };
 
+pub const Extension = extern struct {
+    name: [*:0]const u8,
+    global_id: i32,
+};
+
 pub const ScreenIterator = extern struct {
-    data: ?*Screen,
+    data: [*c]if (@hasDecl(xcb_zig, "Screen")) xcb_zig.Screen else extern struct {},
     rem: i32,
     index: i32,
 };
 
-extern "xcb" fn xcb_connect(displayname: ?[*:0]const u8, screenp: ?*i32) ?*Connection;
-pub const connect = xcb_connect;
-extern "xcb" fn xcb_disconnect(connection: *Connection) void;
-pub const disconnect = xcb_disconnect;
-extern "xcb" fn xcb_flush(connection: *Connection) i32;
-pub const flush = xcb_flush;
-extern "xcb" fn xcb_wait_for_event(connection: *Connection) ?*GenericEvent;
-pub const waitForEvent = xcb_wait_for_event;
-extern "xcb" fn xcb_poll_for_event(connection: *Connection) ?*GenericEvent;
-pub const pollForEvent = xcb_poll_for_event;
-extern "xcb" fn xcb_free_event(connection: *Connection, event: *GenericEvent) void;
-pub const freeEvent = xcb_free_event;
+pub const BaseDispatch = struct {
+    xcb_connect: ?*const fn (displayname: ?[*:0]const u8, screenp: ?*i32) callconv(.c) ?Connection = null,
+    xcb_connect_to_fd: ?*const fn (fd: i32, auth_info: ?*anyopaque) callconv(.c) ?Connection = null,
+    xcb_connect_to_display_with_auth_info: ?*const fn (displayname: ?[*:0]const u8, auth_info: ?*anyopaque, screenp: ?*i32) callconv(.c) ?Connection = null,
+    xcb_disconnect: ?*const fn (connection: Connection) callconv(.c) void = null,
+    xcb_connection_has_error: ?*const fn (connection: Connection) callconv(.c) i32 = null,
+    xcb_get_file_descriptor: ?*const fn (connection: Connection) callconv(.c) i32 = null,
+    xcb_get_setup: ?*const fn (connection: Connection) callconv(.c) *const if (@hasDecl(xcb_zig, "Screen")) xcb_zig.Setup else anyopaque = null,
+    xcb_generate_id: ?*const fn (connection: Connection) callconv(.c) Xid = null,
+    xcb_flush: ?*const fn (connection: Connection) callconv(.c) i32 = null,
+    xcb_send_request: ?*const fn (connection: Connection, flags: u32, vector: ?*anyopaque, request: ?*anyopaque) callconv(.c) u32 = null,
+    xcb_send_request_with_fds: ?*const fn (connection: Connection, flags: u32, vector: ?*anyopaque, request: ?*anyopaque, numFds: u32, fds: [*]const i32) callconv(.c) u32 = null,
+    xcb_wait_for_event: ?*const fn (connection: Connection) callconv(.c) ?*GenericEvent = null,
+    xcb_poll_for_event: ?*const fn (connection: Connection) callconv(.c) ?*GenericEvent = null,
+    xcb_poll_for_queued_event: ?*const fn (connection: Connection) callconv(.c) ?*GenericEvent = null,
+    xcb_free_event: ?*const fn (connection: Connection, event: *GenericEvent) callconv(.c) void = null,
+    xcb_wait_for_reply: ?*const fn (connection: Connection, request: u32, err: ?*?*GenericError) callconv(.c) ?*anyopaque = null,
+    xcb_poll_for_reply: ?*const fn (connection: Connection, request: u32, reply: ?*?*anyopaque, err: ?*?*GenericError) callconv(.c) i32 = null,
+    xcb_discard_reply: ?*const fn (connection: Connection, request: u32) callconv(.c) void = null,
+    xcb_prefetch_extension_data: ?*const fn (connection: Connection, extension: *const Extension) callconv(.c) void = null,
+    xcb_get_extension_data: ?*const fn (connection: Connection, extension: *const Extension) callconv(.c) *const if (@hasDecl(xcb_zig, "Screen")) xcb_zig.QueryExtensionReply else anyopaque = null,
+    xcb_prefetch_maximum_request_length: ?*const fn (connection: Connection) callconv(.c) void = null,
+    xcb_get_maximum_request_length: ?*const fn (connection: Connection) callconv(.c) u32 = null,
+};
 
-extern "xcb" fn xcb_setup_roots_iterator(setup: *const Setup) ScreenIterator;
-pub const setupRootsIterator = xcb_setup_roots_iterator;
+pub const BaseWrapper = BaseWrapperWithCustomDispatch(BaseDispatch);
+pub fn BaseWrapperWithCustomDispatch(DispatchType: type) type {
+    return struct {
+        const Self = @This();
+        pub const Dispatch = DispatchType;
+
+        dispatch: Dispatch,
+
+        pub fn load(dynlib: *std.DynLib) Self {
+            var self: Self = .{ .dispatch = .{} };
+            inline for (std.meta.fields(Dispatch)) |field| {
+                if (dynlib.lookup(field.type, field.name)) |cmd_ptr| {
+                    @field(self.dispatch, field.name) = @ptrCast(cmd_ptr);
+                }
+            }
+            return self;
+        }
+
+        pub fn connect(self: Self, displayname: ?[*:0]const u8, screenp: ?*i32) ?Connection {
+            return self.dispatch.xcb_connect.?(displayname, screenp);
+        }
+        pub fn connectToFd(self: Self, fd: i32, authInfo: ?*anyopaque) ?Connection {
+            return self.dispatch.xcb_connect_to_fd.?(fd, authInfo);
+        }
+        pub fn connectToDisplayWithAuthInfo(self: Self, displayname: ?[*:0]const u8, authInfo: ?*anyopaque, screenp: ?*i32) ?Connection {
+            return self.dispatch.xcb_connect_to_display_with_auth_info.?(displayname, authInfo, screenp);
+        }
+        pub fn disconnect(self: Self, connection: Connection) void {
+            self.dispatch.xcb_disconnect.?(connection);
+        }
+        pub fn connectionHasError(self: Self, connection: Connection) i32 {
+            return self.dispatch.xcb_connection_has_error.?(connection);
+        }
+        pub fn getFileDescriptor(self: Self, connection: Connection) i32 {
+            return self.dispatch.xcb_get_file_descriptor.?(connection);
+        }
+        pub fn getSetup(self: Self, connection: Connection) *const if (@hasDecl(xcb_zig, "Screen")) xcb_zig.Setup else anyopaque {
+            return self.dispatch.xcb_get_setup.?(connection);
+        }
+        pub fn generateId(self: Self, connection: Connection) Xid {
+            return self.dispatch.xcb_generate_id.?(connection);
+        }
+        pub fn flush(self: Self, connection: Connection) i32 {
+            return self.dispatch.xcb_flush.?(connection);
+        }
+        pub fn sendRequest(self: Self, connection: Connection, flags: u32, vector: ?*anyopaque, request: ?*anyopaque) u32 {
+            return self.dispatch.xcb_send_request.?(connection, flags, vector, request);
+        }
+        pub fn sendRequestWithFds(self: Self, connection: Connection, flags: u32, vector: ?*anyopaque, request: ?*anyopaque, numFds: u32, fds: [*]const i32) u32 {
+            return self.dispatch.xcb_send_request_with_fds.?(connection, flags, vector, request, numFds, fds);
+        }
+        pub fn waitForEvent(self: Self, connection: Connection) ?*GenericEvent {
+            return self.dispatch.xcb_wait_for_event.?(connection);
+        }
+        pub fn pollForEvent(self: Self, connection: Connection) ?*GenericEvent {
+            return self.dispatch.xcb_poll_for_event.?(connection);
+        }
+        pub fn pollForQueuedEvent(self: Self, connection: Connection) ?*GenericEvent {
+            return self.dispatch.xcb_poll_for_queued_event.?(connection);
+        }
+        pub fn freeEvent(self: Self, connection: Connection, event: *GenericEvent) void {
+            self.dispatch.xcb_free_event.?(connection, event);
+        }
+        pub fn waitForReply(self: Self, connection: Connection, request: u32, err: ?*?*GenericError) ?*anyopaque {
+            return self.dispatch.xcb_wait_for_reply.?(connection, request, err);
+        }
+        pub fn pollForReply(self: Self, connection: Connection, request: u32, reply: ?*?*anyopaque, err: ?*?*GenericError) i32 {
+            return self.dispatch.xcb_poll_for_reply.?(connection, request, reply, err);
+        }
+        pub fn discardReply(self: Self, connection: Connection, request: u32) void {
+            self.dispatch.xcb_discard_reply.?(connection, request);
+        }
+        pub fn prefetchExtensionData(self: Self, connection: Connection, extension: *const Extension) void {
+            self.dispatch.xcb_prefetch_extension_data.?(connection, extension);
+        }
+        pub fn getExtensionData(self: Self, connection: Connection, extension: *const Extension) *const anyopaque {
+            return self.dispatch.xcb_get_extension_data.?(connection, extension);
+        }
+        pub fn prefetchMaximumRequestLength(self: Self, connection: Connection) void {
+            self.dispatch.xcb_prefetch_maximum_request_length.?(connection);
+        }
+        pub fn getMaximumRequestLength(self: Self, connection: Connection) u32 {
+            return self.dispatch.xcb_get_maximum_request_length.?(connection);
+        }
+    };
+}
+
+pub fn setupRootsIterator(setup: *const if (@hasDecl(xcb_zig, "Screen")) xcb_zig.Setup else anyopaque) ScreenIterator {
+    if (!@hasDecl(xcb_zig, "Screen")) {
+        @compileError("xcb Screen type is required for setupRootsIterator");
+    }
+
+    const screens: [*]xcb_zig.Screen = @ptrCast(@alignCast(
+        @as([*]u8, @ptrCast(@constCast(setup))) + @sizeOf(xcb_zig.Setup),
+    ));
+
+    return .{
+        .data = screens,
+        .rem = setup.roots_len,
+        .index = 0,
+    };
+}

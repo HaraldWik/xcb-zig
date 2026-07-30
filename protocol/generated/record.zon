@@ -1,0 +1,224 @@
+.{
+    .name = "record",
+    .xids = .{
+        .{ .name = "context" },
+    },
+    .xidunions = .{},
+    .typedefs = .{
+        .{ .old = "u8", .new = "element_header" },
+        .{ .old = "u32", .new = "client_spec" },
+    },
+    .enums = .{
+        .{
+            .name = "cs",
+            .fields = .{
+                .{ .name = "current_clients", .value = 1 },
+                .{ .name = "future_clients", .value = 2 },
+                .{ .name = "all_clients", .value = 3 },
+            },
+        },
+    },
+    .bitmasks = .{
+        .{
+            .name = "h_type",
+            .fields = .{
+                .{ .name = "from_server_time", .value = 1 },
+                .{ .name = "from_client_time", .value = 2 },
+                .{ .name = "from_client_sequence", .value = 4 },
+            },
+        },
+    },
+    .structs = .{
+        .{
+            .name = "range8",
+            .fields = .{
+                .{ .name = "first", .type = "u8" },
+                .{ .name = "last", .type = "u8" },
+            },
+        },
+        .{
+            .name = "range16",
+            .fields = .{
+                .{ .name = "first", .type = "u16" },
+                .{ .name = "last", .type = "u16" },
+            },
+        },
+        .{
+            .name = "ext_range",
+            .fields = .{
+                .{ .name = "major", .type = "range8" },
+                .{ .name = "minor", .type = "range16" },
+            },
+        },
+        .{
+            .name = "range",
+            .fields = .{
+                .{ .name = "core_requests", .type = "range8" },
+                .{ .name = "core_replies", .type = "range8" },
+                .{ .name = "ext_requests", .type = "ext_range" },
+                .{ .name = "ext_replies", .type = "ext_range" },
+                .{ .name = "delivered_events", .type = "range8" },
+                .{ .name = "device_events", .type = "range8" },
+                .{ .name = "errors", .type = "range8" },
+                .{ .name = "client_started", .type = "bool" },
+                .{ .name = "client_died", .type = "bool" },
+            },
+        },
+        .{
+            .name = "client_info",
+            .fields = .{
+                .{ .name = "client_resource", .type = "client_spec" },
+                .{ .name = "num_ranges", .type = "u32" },
+                .{
+                    .name = "ranges",
+                    .type = "range",
+                    .list = true,
+                    .fieldref = "num_ranges",
+                },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "major_version", .type = "u16" },
+                .{ .name = "minor_version", .type = "u16" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "create_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+                .{ .name = "element_header", .type = "element_header" },
+                .{ .pad = 3 },
+                .{ .name = "num_client_specs", .type = "u32" },
+                .{ .name = "num_ranges", .type = "u32" },
+                .{
+                    .name = "client_specs",
+                    .type = "client_spec",
+                    .list = true,
+                    .fieldref = "num_client_specs",
+                },
+                .{
+                    .name = "ranges",
+                    .type = "range",
+                    .list = true,
+                    .fieldref = "num_ranges",
+                },
+            },
+        },
+        .{
+            .name = "register_clients",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+                .{ .name = "element_header", .type = "element_header" },
+                .{ .pad = 3 },
+                .{ .name = "num_client_specs", .type = "u32" },
+                .{ .name = "num_ranges", .type = "u32" },
+                .{
+                    .name = "client_specs",
+                    .type = "client_spec",
+                    .list = true,
+                    .fieldref = "num_client_specs",
+                },
+                .{
+                    .name = "ranges",
+                    .type = "range",
+                    .list = true,
+                    .fieldref = "num_ranges",
+                },
+            },
+        },
+        .{
+            .name = "unregister_clients",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+                .{ .name = "num_client_specs", .type = "u32" },
+                .{
+                    .name = "client_specs",
+                    .type = "client_spec",
+                    .list = true,
+                    .fieldref = "num_client_specs",
+                },
+            },
+        },
+        .{
+            .name = "get_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+            },
+            .returns = "get_context_reply",
+        },
+        .{
+            .name = "enable_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+            },
+            .returns = "enable_context_reply",
+        },
+        .{
+            .name = "disable_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+            },
+        },
+        .{
+            .name = "free_context",
+            .params = .{
+                .{ .name = "context", .type = "context" },
+            },
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u16" },
+                .{ .name = "minor_version", .type = "u16" },
+            },
+        },
+        .{
+            .name = "get_context_reply",
+            .fields = .{
+                .{ .name = "enabled", .type = "bool" },
+                .{ .name = "element_header", .type = "element_header" },
+                .{ .pad = 3 },
+                .{ .name = "num_intercepted_clients", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "intercepted_clients",
+                    .type = "client_info",
+                    .list = true,
+                    .fieldref = "num_intercepted_clients",
+                },
+            },
+        },
+        .{
+            .name = "enable_context_reply",
+            .fields = .{
+                .{ .name = "category", .type = "u8" },
+                .{ .name = "element_header", .type = "element_header" },
+                .{ .name = "client_swapped", .type = "bool" },
+                .{ .pad = 2 },
+                .{ .name = "xid_base", .type = "u32" },
+                .{ .name = "server_time", .type = "u32" },
+                .{ .name = "rec_sequence_num", .type = "u32" },
+                .{ .pad = 8 },
+                .{ .name = "data", .type = "u8", .list = true },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{
+        .{
+            .name = "bad_context",
+            .fields = .{
+                .{ .name = "invalid_record", .type = "u32" },
+            },
+        },
+    },
+}

@@ -1,0 +1,443 @@
+.{
+    .name = "xselinux",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{
+        .{
+            .name = "list_item",
+            .fields = .{
+                .{ .name = "name", .type = "atom" },
+                .{ .name = "object_context_len", .type = "u32" },
+                .{ .name = "data_context_len", .type = "u32" },
+                .{
+                    .name = "object_context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "object_context_len",
+                },
+                .{ .alignment = 4 },
+                .{
+                    .name = "data_context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "data_context_len",
+                },
+                .{ .alignment = 4 },
+            },
+        },
+    },
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "client_major", .type = "u8" },
+                .{ .name = "client_minor", .type = "u8" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "set_device_create_context",
+            .params = .{
+                .{ .name = "context_len", .type = "u32" },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_device_create_context",
+            .params = .{},
+            .returns = "get_device_create_context_reply",
+        },
+        .{
+            .name = "set_device_context",
+            .params = .{
+                .{ .name = "device", .type = "u32" },
+                .{ .name = "context_len", .type = "u32" },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_device_context",
+            .params = .{
+                .{ .name = "device", .type = "u32" },
+            },
+            .returns = "get_device_context_reply",
+        },
+        .{
+            .name = "set_window_create_context",
+            .params = .{
+                .{ .name = "context_len", .type = "u32" },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_window_create_context",
+            .params = .{},
+            .returns = "get_window_create_context_reply",
+        },
+        .{
+            .name = "get_window_context",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+            .returns = "get_window_context_reply",
+        },
+        .{
+            .name = "set_property_create_context",
+            .params = .{
+                .{ .name = "context_len", .type = "u32" },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_property_create_context",
+            .params = .{},
+            .returns = "get_property_create_context_reply",
+        },
+        .{
+            .name = "set_property_use_context",
+            .params = .{
+                .{ .name = "context_len", .type = "u32" },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_property_use_context",
+            .params = .{},
+            .returns = "get_property_use_context_reply",
+        },
+        .{
+            .name = "get_property_context",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "property", .type = "atom" },
+            },
+            .returns = "get_property_context_reply",
+        },
+        .{
+            .name = "get_property_data_context",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+                .{ .name = "property", .type = "atom" },
+            },
+            .returns = "get_property_data_context_reply",
+        },
+        .{
+            .name = "list_properties",
+            .params = .{
+                .{ .name = "window", .type = "window" },
+            },
+            .returns = "list_properties_reply",
+        },
+        .{
+            .name = "set_selection_create_context",
+            .params = .{
+                .{ .name = "context_len", .type = "u32" },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_selection_create_context",
+            .params = .{},
+            .returns = "get_selection_create_context_reply",
+        },
+        .{
+            .name = "set_selection_use_context",
+            .params = .{
+                .{ .name = "context_len", .type = "u32" },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_selection_use_context",
+            .params = .{},
+            .returns = "get_selection_use_context_reply",
+        },
+        .{
+            .name = "get_selection_context",
+            .params = .{
+                .{ .name = "selection", .type = "atom" },
+            },
+            .returns = "get_selection_context_reply",
+        },
+        .{
+            .name = "get_selection_data_context",
+            .params = .{
+                .{ .name = "selection", .type = "atom" },
+            },
+            .returns = "get_selection_data_context_reply",
+        },
+        .{
+            .name = "list_selections",
+            .params = .{},
+            .returns = "list_selections_reply",
+        },
+        .{
+            .name = "get_client_context",
+            .params = .{
+                .{ .name = "resource", .type = "u32" },
+            },
+            .returns = "get_client_context_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "server_major", .type = "u16" },
+                .{ .name = "server_minor", .type = "u16" },
+            },
+        },
+        .{
+            .name = "get_device_create_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_device_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_window_create_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_window_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_property_create_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_property_use_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_property_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_property_data_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "list_properties_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "properties_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "properties",
+                    .type = "list_item",
+                    .list = true,
+                    .fieldref = "properties_len",
+                },
+            },
+        },
+        .{
+            .name = "get_selection_create_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_selection_use_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_selection_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "get_selection_data_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+        .{
+            .name = "list_selections_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "selections_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "selections",
+                    .type = "list_item",
+                    .list = true,
+                    .fieldref = "selections_len",
+                },
+            },
+        },
+        .{
+            .name = "get_client_context_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "context_len", .type = "u32" },
+                .{ .pad = 20 },
+                .{
+                    .name = "context",
+                    .type = "u8",
+                    .list = true,
+                    .fieldref = "context_len",
+                },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

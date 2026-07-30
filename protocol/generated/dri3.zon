@@ -1,0 +1,202 @@
+.{
+    .name = "dri3",
+    .xids = .{},
+    .xidunions = .{},
+    .typedefs = .{},
+    .enums = .{},
+    .bitmasks = .{},
+    .structs = .{},
+    .unions = .{},
+    .requests = .{
+        .{
+            .name = "query_version",
+            .params = .{
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+            },
+            .returns = "query_version_reply",
+        },
+        .{
+            .name = "open",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "provider", .type = "u32" },
+            },
+            .returns = "open_reply",
+        },
+        .{
+            .name = "pixmap_from_buffer",
+            .params = .{
+                .{ .name = "pixmap", .type = "pixmap" },
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "size", .type = "u32" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "stride", .type = "u16" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .name = "bpp", .type = "u8" },
+            },
+        },
+        .{
+            .name = "buffer_from_pixmap",
+            .params = .{
+                .{ .name = "pixmap", .type = "pixmap" },
+            },
+            .returns = "buffer_from_pixmap_reply",
+        },
+        .{
+            .name = "fence_from_fd",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "fence", .type = "u32" },
+                .{ .name = "initially_triggered", .type = "bool" },
+                .{ .pad = 3 },
+            },
+        },
+        .{
+            .name = "fd_from_fence",
+            .params = .{
+                .{ .name = "drawable", .type = "drawable" },
+                .{ .name = "fence", .type = "u32" },
+            },
+            .returns = "fd_from_fence_reply",
+        },
+        .{
+            .name = "get_supported_modifiers",
+            .params = .{
+                .{ .name = "window", .type = "u32" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .name = "bpp", .type = "u8" },
+                .{ .pad = 2 },
+            },
+            .returns = "get_supported_modifiers_reply",
+        },
+        .{
+            .name = "pixmap_from_buffers",
+            .params = .{
+                .{ .name = "pixmap", .type = "pixmap" },
+                .{ .name = "window", .type = "window" },
+                .{ .name = "num_buffers", .type = "u8" },
+                .{ .pad = 3 },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "stride0", .type = "u32" },
+                .{ .name = "offset0", .type = "u32" },
+                .{ .name = "stride1", .type = "u32" },
+                .{ .name = "offset1", .type = "u32" },
+                .{ .name = "stride2", .type = "u32" },
+                .{ .name = "offset2", .type = "u32" },
+                .{ .name = "stride3", .type = "u32" },
+                .{ .name = "offset3", .type = "u32" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .name = "bpp", .type = "u8" },
+                .{ .pad = 2 },
+                .{ .name = "modifier", .type = "u64" },
+                .{
+                    .name = "buffers",
+                    .type = "fd",
+                    .list = true,
+                    .fieldref = "num_buffers",
+                },
+            },
+        },
+        .{
+            .name = "buffers_from_pixmap",
+            .params = .{
+                .{ .name = "pixmap", .type = "pixmap" },
+            },
+            .returns = "buffers_from_pixmap_reply",
+        },
+    },
+    .replies = .{
+        .{
+            .name = "query_version_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "major_version", .type = "u32" },
+                .{ .name = "minor_version", .type = "u32" },
+            },
+        },
+        .{
+            .name = "open_reply",
+            .fields = .{
+                .{ .name = "nfd", .type = "u8" },
+                .{ .pad = 24 },
+            },
+        },
+        .{
+            .name = "buffer_from_pixmap_reply",
+            .fields = .{
+                .{ .name = "nfd", .type = "u8" },
+                .{ .name = "size", .type = "u32" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .name = "stride", .type = "u16" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .name = "bpp", .type = "u8" },
+                .{ .pad = 12 },
+            },
+        },
+        .{
+            .name = "fd_from_fence_reply",
+            .fields = .{
+                .{ .name = "nfd", .type = "u8" },
+                .{ .pad = 24 },
+            },
+        },
+        .{
+            .name = "get_supported_modifiers_reply",
+            .fields = .{
+                .{ .pad = 1 },
+                .{ .name = "num_window_modifiers", .type = "u32" },
+                .{ .name = "num_screen_modifiers", .type = "u32" },
+                .{ .pad = 16 },
+                .{
+                    .name = "window_modifiers",
+                    .type = "u64",
+                    .list = true,
+                    .fieldref = "num_window_modifiers",
+                },
+                .{
+                    .name = "screen_modifiers",
+                    .type = "u64",
+                    .list = true,
+                    .fieldref = "num_screen_modifiers",
+                },
+            },
+        },
+        .{
+            .name = "buffers_from_pixmap_reply",
+            .fields = .{
+                .{ .name = "nfd", .type = "u8" },
+                .{ .name = "width", .type = "u16" },
+                .{ .name = "height", .type = "u16" },
+                .{ .pad = 4 },
+                .{ .name = "modifier", .type = "u64" },
+                .{ .name = "depth", .type = "u8" },
+                .{ .name = "bpp", .type = "u8" },
+                .{ .pad = 6 },
+                .{
+                    .name = "strides",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "nfd",
+                },
+                .{
+                    .name = "offsets",
+                    .type = "u32",
+                    .list = true,
+                    .fieldref = "nfd",
+                },
+                .{
+                    .name = "buffers",
+                    .type = "fd",
+                    .list = true,
+                    .fieldref = "nfd",
+                },
+            },
+        },
+    },
+    .events = .{},
+    .errors = .{},
+}

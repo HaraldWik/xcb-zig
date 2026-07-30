@@ -1,0 +1,3 @@
+[submodule "protocol/xml"]
+	path = protocol/xml
+	url = https://github.com/freedesktop-unofficial-mirror/xcb__proto
